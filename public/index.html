@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RIABANK</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C8973A;
+    --gold-dark: #8A6420;
+    --navy: #0B1C3E;
+    --navy-mid: #162B5B;
+    --navy-light: #1E3A78;
+    --white: #FFFFFF;
+    --text-muted: #7A8090;
+    --border: rgba(200,151,58,0.2);
+    --danger: #C0392B;
+    --success: #1A7A4A;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed; top: 20px; right: 20px; z-index: 9999;
+    padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    background: var(--navy); border: 1px solid var(--gold); color: var(--gold);
+    transform: translateY(-80px); opacity: 0; transition: all 0.35s ease;
+    max-width: 320px; pointer-events: none;
+  }
+  #toast.show  { transform: translateY(0); opacity: 1; }
+  #toast.error   { border-color: var(--danger); color: #e74c3c; }
+  #toast.success { border-color: var(--success); color: #2ecc71; }
+
+  /* ─── SPINNER ─── */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block; vertical-align: middle;
+  }
+  @keyframes spin    { to { transform: rotate(360deg); } }
+  @keyframes fadeUp  { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ══════════════════════════
+     AUTH PAGES
+  ══════════════════════════ */
+  #loginPage, #registerPage {
+    background: linear-gradient(135deg, #0B1C3E 0%, #162B5B 50%, #0B1C3E 100%);
+    align-items: center; justify-content: center;
+    padding: 24px; position: relative;
+  }
+  #loginPage::before, #registerPage::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 70% 20%, rgba(200,151,58,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(200,151,58,0.05) 0%, transparent 50%);
+  }
+  .auth-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 48px 40px; width: 100%; max-width: 440px;
+    backdrop-filter: blur(10px); position: relative; z-index: 1;
+    animation: fadeUp 0.6s ease both;
+  }
+  .brand { text-align: center; margin-bottom: 32px; }
+  .brand-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px; font-weight: 700;
+    color: var(--gold); letter-spacing: 4px; display: block;
+  }
+  .brand-sub {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--text-muted); margin-top: 4px; display: block;
+  }
+  .brand-line { width: 40px; height: 2px; background: var(--gold); margin: 10px auto 0; border-radius: 2px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 11px; font-weight: 600;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 7px;
+  }
+  .form-group input {
+    width: 100%; padding: 13px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(200,151,58,0.25);
+    border-radius: 10px; color: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    transition: border-color 0.2s, background 0.2s; outline: none;
+  }
+  .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+  .form-group input:focus { border-color: var(--gold); background: rgba(200,151,58,0.07); }
+
+  .hint {
+    font-size: 12px; color: var(--text-muted);
+    margin-bottom: 20px; line-height: 1.6; text-align: center;
+  }
+  .btn-primary {
+    width: 100%; padding: 14px;
+    background: var(--gold); color: var(--navy);
+    border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; margin-top: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-primary:hover    { background: #d4a440; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .auth-footer {
+    text-align: center; margin-top: 22px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .auth-footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  /* ══════════════════════════
+     APP SHELL
+  ══════════════════════════ */
+  #appPage { flex-direction: column; background: #0D1520; min-height: 100vh; }
+
+  .topnav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(11,28,62,0.96);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .topnav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 3px;
+  }
+  .topnav-right { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--gold); color: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .topnav-name { font-size: 14px; font-weight: 500; }
+  .btn-logout {
+    background: none; border: 1px solid rgba(200,151,58,0.3);
+    color: var(--text-muted); padding: 6px 14px; border-radius: 8px;
+    font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: var(--danger); color: #e74c3c; }
+
+  .app-body { flex: 1; padding: 24px 20px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+  /* Welcome */
+  .welcome-banner {
+    background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 26px 28px; margin-bottom: 18px;
+    position: relative; overflow: hidden; animation: fadeUp 0.4s ease both;
+  }
+  .welcome-banner::after {
+    content: 'RIABANK';
+    position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+    font-family: 'Playfair Display', serif; font-size: 76px;
+    color: rgba(200,151,58,0.05); letter-spacing: 4px;
+    pointer-events: none; font-weight: 700;
+  }
+  .welcome-greeting { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+  .welcome-name     { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 3px; }
+  .welcome-date     { font-size: 12px; color: var(--text-muted); }
+
+  /* No-account banner */
+  .no-account-banner {
+    display: none;
+    background: rgba(200,151,58,0.07); border: 1px dashed rgba(200,151,58,0.5);
+    border-radius: var(--radius); padding: 20px 24px;
+    margin-bottom: 18px; text-align: center;
+  }
+  .no-account-banner p { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+
+  /* Balance Card */
+  .balance-card {
+    background: linear-gradient(135deg, #C8973A 0%, #8A6420 100%);
+    border-radius: var(--radius); padding: 26px 28px;
+    margin-bottom: 18px; position: relative; overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+  .balance-card::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.08);
+  }
+  .balance-card::after {
+    content: ''; position: absolute; bottom: -20px; left: 30px;
+    width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05);
+  }
+  .balance-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(11,28,62,0.65); font-weight: 700; margin-bottom: 6px;
+  }
+  .balance-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px; font-weight: 700; color: var(--navy);
+    margin-bottom: 4px; position: relative; z-index: 1;
+  }
+  .balance-acct { font-size: 13px; color: rgba(11,28,62,0.55); font-weight: 500; position: relative; z-index: 1; }
+  .balance-refresh {
+    position: absolute; top: 18px; right: 18px; z-index: 2;
+    background: rgba(11,28,62,0.15); border: none; color: var(--navy);
+    width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+    font-size: 16px; transition: transform 0.35s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .balance-refresh:hover { transform: rotate(180deg); }
+  .balance-eye {
+    position: absolute; bottom: 18px; right: 18px; z-index: 2;
+    background: rgba(11,28,62,0.15); border: none; color: var(--navy);
+    padding: 5px 12px; border-radius: 20px; cursor: pointer;
+    font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700;
+  }
+  .balance-eye:hover { background: rgba(11,28,62,0.25); }
+
+  /* Quick Actions */
+  .section-title {
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 600; margin-bottom: 12px;
+  }
+  .quick-actions {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
+    margin-bottom: 22px; animation: fadeUp 0.55s ease both;
+  }
+  .action-btn {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 10px; text-align: center;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .action-btn:hover { background: rgba(200,151,58,0.1); border-color: var(--gold); transform: translateY(-2px); }
+  .action-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .action-icon.transfer { background: rgba(200,151,58,0.15); }
+  .action-icon.balance  { background: rgba(30,58,120,0.4); }
+  .action-icon.history  { background: rgba(26,122,74,0.2); }
+  .action-icon.identity { background: rgba(192,57,43,0.15); }
+  .action-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+
+  /* Panels */
+  .panel {
+    display: none; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 26px; margin-bottom: 20px; animation: fadeUp 0.35s ease both;
+  }
+  .panel.active { display: block; }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .panel-title  { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+  .btn-close-panel {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 20px; cursor: pointer; line-height: 1; transition: color 0.2s;
+  }
+  .btn-close-panel:hover { color: var(--white); }
+
+  /* Panel inputs */
+  .panel .form-group label { color: rgba(255,255,255,0.45); }
+  .panel .form-group input,
+  .panel .form-group select,
+  .panel .form-group textarea {
+    width: 100%; padding: 13px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; color: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .panel .form-group input::placeholder,
+  .panel .form-group textarea::placeholder { color: rgba(255,255,255,0.22); }
+  .panel .form-group input:focus,
+  .panel .form-group select:focus,
+  .panel .form-group textarea:focus { border-color: var(--gold); }
+  .panel .form-group select option { background: var(--navy); }
+  .panel .form-group textarea { resize: vertical; min-height: 76px; }
+  .panel .form-group input[readonly] { opacity: 0.65; cursor: default; }
+
+  .name-hint { margin-top: 6px; font-size: 13px; min-height: 18px; font-weight: 500; }
+
+  .btn-gold {
+    background: var(--gold); color: var(--navy);
+    border: none; border-radius: 10px; padding: 13px 26px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-gold:hover    { background: #d4a440; transform: translateY(-1px); }
+  .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Balance detail stats */
+  .stat-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .stat-card {
+    flex: 1; min-width: 130px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-value { font-size: 18px; font-weight: 700; }
+  .stat-value.green { color: #2ecc71; }
+  .stat-value.red   { color: #e74c3c; }
+
+  .acct-box {
+    background: rgba(200,151,58,0.07); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 18px;
+  }
+  .acct-box-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .acct-box-num   { font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
+  .acct-box-name  { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .acct-box-type  { font-size: 12px; color: var(--text-muted); }
+
+  /* Transaction list */
+  .tx-list { display: flex; flex-direction: column; }
+  .tx-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .tx-item:last-child { border-bottom: none; }
+  .tx-left  { display: flex; align-items: center; gap: 12px; }
+  .tx-icon  {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .tx-icon.credit { background: rgba(26,122,74,0.2); }
+  .tx-icon.debit  { background: rgba(192,57,43,0.15); }
+  .tx-desc   { font-size: 14px; font-weight: 500; }
+  .tx-meta   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .tx-amount { font-size: 15px; font-weight: 700; }
+  .tx-amount.credit { color: #2ecc71; }
+  .tx-amount.debit  { color: #e74c3c; }
+
+  /* Identity tabs */
+  .id-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .id-tab {
+    padding: 8px 20px; border-radius: 8px;
+    border: 1px solid var(--border); background: none;
+    color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .id-tab.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+  .id-tab-content { display: none; }
+  .id-tab-content.active { display: block; }
+
+  .verify-result {
+    border-radius: 10px; padding: 16px; margin-top: 16px;
+    background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.3);
+  }
+  .verify-result.error { background: rgba(192,57,43,0.1); border-color: rgba(192,57,43,0.3); }
+  .verify-result .v-icon  { font-size: 24px; margin-bottom: 8px; }
+  .verify-result .v-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .verify-result .v-sub   { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* Confirm Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65); z-index: 200;
+    align-items: center; justify-content: center; padding: 20px;
+    backdrop-filter: blur(5px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #0D1D3A; border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px; width: 100%; max-width: 380px;
+    animation: fadeUp 0.3s ease;
+  }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 20px; text-align: center; }
+  .modal-rows  { display: flex; flex-direction: column; margin-bottom: 24px; }
+  .modal-row   {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .modal-row:last-child { border-bottom: none; }
+  .modal-row-label { font-size: 13px; color: var(--text-muted); }
+  .modal-row-value { font-size: 14px; font-weight: 700; }
+  .modal-row-value.gold { color: var(--gold); }
+  .modal-actions { display: flex; gap: 12px; }
+  .btn-cancel {
+    flex: 1; padding: 13px; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+    color: var(--white); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-cancel:hover { background: rgba(255,255,255,0.12); }
+
+  @media (max-width: 480px) {
+    .auth-card      { padding: 32px 22px; }
+    .quick-actions  { grid-template-columns: repeat(2,1fr); }
+    .balance-amount { font-size: 30px; }
+    .topnav-name    { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title">Confirm Transfer</div>
+    <div class="modal-rows">
+      <div class="modal-row">
+        <span class="modal-row-label">To Account</span>
+        <span class="modal-row-value" id="m-to"></span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Account Name</span>
+        <span class="modal-row-value" id="m-name"></span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Narration</span>
+        <span class="modal-row-value" id="m-narration" style="font-size:13px;color:var(--text-muted);"></span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">Amount</span>
+        <span class="modal-row-value gold" id="m-amount"></span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-gold" style="flex:1;justify-content:center;"
+              id="btnConfirmTransfer" onclick="executeTransfer()">
+        Send Money
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ LOGIN PAGE ══════════════════════ -->
+<div class="page active" id="loginPage">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-logo">RIABANK</span>
+      <span class="brand-sub">Secure Banking</span>
+      <div class="brand-line"></div>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Your password" />
+    </div>
+    <button class="btn-primary" id="btnLogin" onclick="handleLogin()">
+      <span id="loginText">Sign In</span>
+    </button>
+    <p class="auth-footer">
+      Don't have an account yet?
+      <a href="#" onclick="showPage('registerPage')">Register here</a>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════ REGISTER PAGE ══════════════════════ -->
+<div class="page" id="registerPage">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-logo">RIABANK</span>
+      <span class="brand-sub">Create Account</span>
+      <div class="brand-line"></div>
+    </div>
+    <p class="hint">Your name is pulled automatically from your BVN — no need to type it manually.</p>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="regEmail" placeholder="your@email.com" />
+    </div>
+    <div class="form-group">
+      <label>BVN (Bank Verification Number)</label>
+      <input type="text" id="regBvn" placeholder="11-digit BVN" maxlength="11" inputmode="numeric" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="regPass" placeholder="Minimum 8 characters" />
+    </div>
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="regPass2" placeholder="Repeat your password" />
+    </div>
+    <button class="btn-primary" id="btnRegister" onclick="handleRegister()">
+      <span id="regText">Create Account</span>
+    </button>
+    <p class="auth-footer">
+      Already have an account?
+      <a href="#" onclick="showPage('loginPage')">Sign in here</a>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════ APP PAGE ══════════════════════ -->
+<div class="page" id="appPage" style="flex-direction:column;">
+
+  <nav class="topnav">
+    <span class="topnav-brand">RIABANK</span>
+    <div class="topnav-right">
+      <div class="avatar" id="navAvatar">--</div>
+      <span class="topnav-name" id="navName"></span>
+      <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="app-body">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-greeting">Welcome back</div>
+      <div class="welcome-name" id="welcomeName">—</div>
+      <div class="welcome-date" id="welcomeDate"></div>
+    </div>
+
+    <!-- No-Account Banner -->
+    <div class="no-account-banner" id="noAccountBanner">
+      <p>You don't have a NIBSS bank account yet.<br>Create one to start transacting on RIABANK.</p>
+      <button class="btn-gold" id="btnCreateAcct" onclick="createBankAccount()">
+        <span id="createAcctText">+ Create Bank Account</span>
+      </button>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="balance-card">
+      <button class="balance-refresh" onclick="refreshBalance()" title="Refresh">↻</button>
+      <button class="balance-eye" id="balanceEye" onclick="toggleBalance()">Hide</button>
+      <div class="balance-label">Available Balance</div>
+      <div class="balance-amount" id="balanceDisplay">₦ — — —</div>
+      <div class="balance-acct"   id="balanceAcct">—</div>
+    </div>
+
+    <!-- Quick Actions -->
+    <p class="section-title">What would you like to do?</p>
+    <div class="quick-actions">
+      <div class="action-btn" onclick="openPanel('transferPanel')">
+        <div class="action-icon transfer">💸</div>
+        <div class="action-label">Transfer</div>
+      </div>
+      <div class="action-btn" onclick="openPanel('balancePanel')">
+        <div class="action-icon balance">💰</div>
+        <div class="action-label">Balance</div>
+      </div>
+      <div class="action-btn" onclick="openPanel('historyPanel')">
+        <div class="action-icon history">📋</div>
+        <div class="action-label">History</div>
+      </div>
+      <div class="action-btn" onclick="openPanel('identityPanel')">
+        <div class="action-icon identity">🛡</div>
+        <div class="action-label">Verify ID</div>
+      </div>
+    </div>
+
+    <!-- ── TRANSFER PANEL ── -->
+    <div class="panel" id="transferPanel">
+      <div class="panel-header">
+        <span class="panel-title">Send Money</span>
+        <button class="btn-close-panel" onclick="closePanel('transferPanel')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Recipient Account Number</label>
+        <input type="text" id="tfAcctNum" placeholder="10-digit account number"
+               maxlength="10" inputmode="numeric"
+               oninput="if(this.value.length===10) lookupAccountName(this.value)" />
+        <div class="name-hint" id="nameEnquiryResult"></div>
+      </div>
+      <div class="form-group">
+        <label>Recipient Name</label>
+        <input type="text" id="tfRecipient" placeholder="Auto-filled after lookup" readonly />
+      </div>
+      <div class="form-group">
+        <label>Amount (₦)</label>
+        <input type="number" id="tfAmount" placeholder="e.g. 5000" min="1" inputmode="numeric" />
+      </div>
+      <div class="form-group">
+        <label>Narration <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
+        <input type="text" id="tfNarration" placeholder="What is this payment for?" maxlength="100" />
+      </div>
+      <button class="btn-gold" onclick="initiateTransfer()">Review Transfer</button>
+    </div>
+
+    <!-- ── BALANCE PANEL ── -->
+    <div class="panel" id="balancePanel">
+      <div class="panel-header">
+        <span class="panel-title">Account Balance</span>
+        <button class="btn-close-panel" onclick="closePanel('balancePanel')">✕</button>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Available</div>
+          <div class="stat-value green" id="bpAvail">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Month In</div>
+          <div class="stat-value green" id="bpIn">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Month Out</div>
+          <div class="stat-value red" id="bpOut">—</div>
+        </div>
+      </div>
+      <div class="acct-box">
+        <div class="acct-box-label">Account Number</div>
+        <div class="acct-box-num"  id="bpAcctNum">—</div>
+        <div class="acct-box-label">Account Name</div>
+        <div class="acct-box-name" id="bpAcctName">—</div>
+        <div class="acct-box-type">Savings Account · RIABANK</div>
+      </div>
+      <button class="btn-gold" onclick="refreshBalance()">↻ &nbsp;Refresh Balance</button>
+    </div>
+
+    <!-- ── HISTORY PANEL ── -->
+    <div class="panel" id="historyPanel">
+      <div class="panel-header">
+        <span class="panel-title">Transactions</span>
+        <button class="btn-close-panel" onclick="closePanel('historyPanel')">✕</button>
+      </div>
+      <div class="tx-list" id="txList">
+        <div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">
+          Loading transactions...
+        </div>
+      </div>
+    </div>
+
+    <!-- ── IDENTITY PANEL ── -->
+    <div class="panel" id="identityPanel">
+      <div class="panel-header">
+        <span class="panel-title">Verify Identity</span>
+        <button class="btn-close-panel" onclick="closePanel('identityPanel')">✕</button>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.7;">
+        Your identity is verified through your BVN during registration.
+        Use this panel to confirm your BVN details at any time.
+      </p>
+      <div class="id-tabs">
+        <button class="id-tab active" onclick="switchIdTab('bvn',this)">BVN</button>
+        <button class="id-tab"        onclick="switchIdTab('nin',this)">NIN</button>
+      </div>
+
+      <div class="id-tab-content active" id="tab-bvn">
+        <div class="form-group">
+          <label>Bank Verification Number</label>
+          <input type="text" id="bvnInput" placeholder="11-digit BVN" maxlength="11" inputmode="numeric" />
+        </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="bvnDob" />
+        </div>
+        <button class="btn-gold" onclick="verifyBvn()">🛡 &nbsp;Verify BVN</button>
+      </div>
+
+      <div class="id-tab-content" id="tab-nin">
+        <div class="form-group">
+          <label>National Identification Number</label>
+          <input type="text" id="ninInput" placeholder="11-digit NIN" maxlength="11" inputmode="numeric" />
+        </div>
+        <div class="form-group">
+          <label>Full Name (as on ID)</label>
+          <input type="text" id="ninName" placeholder="Your legal full name" />
+        </div>
+        <button class="btn-gold" onclick="verifyNin()">🛡 &nbsp;Verify NIN</button>
+      </div>
+
+      <div id="verifyResult"></div>
+    </div>
+
+  </div><!-- /app-body -->
+</div><!-- /appPage -->
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG  —  change this to your deployed URL later
+══════════════════════════════════════════════════ */
+const API_BASE = 'http://localhost:5000/api';
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let state = {
+  token:         null,
+  user:          null,   // { id, email, firstName, lastName, bvn }
+  accountNumber: null,
+  accountName:   null,
+  balance:       null,
+  balanceHidden: false,
+  transactions:  []
+};
+
+/* ══════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = type + ' show';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function fmt(n) {
+  return '₦ ' + Number(n).toLocaleString('en-NG', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+}
+
+function setBtn(btnId, spanId, loading, label) {
+  const btn  = document.getElementById(btnId);
+  const span = document.getElementById(spanId);
+  btn.disabled   = loading;
+  span.innerHTML = loading ? '<span class="spinner"></span>' : label;
+}
+
+async function apiFetch(endpoint, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res  = await fetch(API_BASE + endpoint, {
+    ...opts, headers: { ...headers, ...(opts.headers || {}) }
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
+  return data;
+}
+
+/* ══════════════════════════════════════════════════
+   AUTH — LOGIN
+   POST /api/auth/login  { email, password }
+   → { token, user: { id, email, firstName, lastName, bvn } }
+
+   Then chains:
+   GET  /api/account/me
+   → { accountNumber, accountName }
+
+   Then chains:
+   GET  /api/transaction/balance/:accountNumber
+   → { accountName, accountNumber, balance }
+══════════════════════════════════════════════════ */
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { toast('Please fill in all fields', 'error'); return; }
+
+  setBtn('btnLogin', 'loginText', true, 'Sign In');
+  try {
+    // 1. Login
+    const auth = await apiFetch('/auth/login', {
+      method: 'POST',
+      body:   JSON.stringify({ email, password: pass })
+    });
+    state.token = auth.token;
+    state.user  = auth.user;
+
+    // 2. Get account number from MongoDB
+    try {
+      const acct        = await apiFetch('/account/me');
+      state.accountNumber = acct.accountNumber || null;
+      state.accountName   = acct.accountName   ||
+                            `${auth.user.firstName} ${auth.user.lastName}`;
+    } catch (_) {
+      state.accountNumber = null; // no bank account yet
+      state.accountName   = `${auth.user.firstName} ${auth.user.lastName}`;
+    }
+
+    // 3. Get live balance from NIBSS (only if account exists)
+    if (state.accountNumber) {
+      try {
+        const bal         = await apiFetch(`/transaction/balance/${state.accountNumber}`);
+        state.balance       = bal.balance     ?? null;
+        state.accountName   = bal.accountName || state.accountName;
+        state.accountNumber = bal.accountNumber || state.accountNumber;
+      } catch (_) { /* balance unavailable — show — */ }
+    }
+
+    toast('Login successful!', 'success');
+    initApp();
+    showPage('appPage');
+
+  } catch (err) {
+    toast(err.message || 'Login failed. Check your credentials.', 'error');
+  } finally {
+    setBtn('btnLogin', 'loginText', false, 'Sign In');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   AUTH — REGISTER
+   POST /api/auth/register  { email, bvn, password }
+   → { message, user: { firstName, ... } }
+══════════════════════════════════════════════════ */
+async function handleRegister() {
+  const email = document.getElementById('regEmail').value.trim();
+  const bvn   = document.getElementById('regBvn').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+
+  if (!email || !bvn || !pass || !pass2) { toast('Please fill all fields', 'error'); return; }
+  if (bvn.length !== 11)  { toast('BVN must be exactly 11 digits', 'error'); return; }
+  if (pass !== pass2)     { toast('Passwords do not match', 'error'); return; }
+  if (pass.length < 8)    { toast('Password must be at least 8 characters', 'error'); return; }
+
+  setBtn('btnRegister', 'regText', true, 'Create Account');
+  try {
+    const data = await apiFetch('/auth/register', {
+      method: 'POST',
+      body:   JSON.stringify({ email, bvn, password: pass })
+    });
+    toast(
+      `Welcome ${data.user?.firstName || ''}! Account created. Please sign in.`,
+      'success'
+    );
+    setTimeout(() => showPage('loginPage'), 2200);
+  } catch (err) {
+    toast(err.message || 'Registration failed.', 'error');
+  } finally {
+    setBtn('btnRegister', 'regText', false, 'Create Account');
+  }
+}
+
+function handleLogout() {
+  state = {
+    token: null, user: null, accountNumber: null,
+    accountName: null, balance: null, balanceHidden: false, transactions: []
+  };
+  showPage('loginPage');
+  toast('You have been logged out.');
+}
+
+/* ══════════════════════════════════════════════════
+   DASHBOARD INIT
+══════════════════════════════════════════════════ */
+function initApp() {
+  const u        = state.user;
+  const initials = `${u.firstName[0]}${u.lastName[0]}`.toUpperCase();
+
+  document.getElementById('navAvatar').textContent   = initials;
+  document.getElementById('navName').textContent     = u.firstName;
+  document.getElementById('welcomeName').textContent = state.accountName ||
+                                                       `${u.firstName} ${u.lastName}`;
+  document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('en-NG', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  // Show "Create Account" banner if no bank account yet
+  document.getElementById('noAccountBanner').style.display =
+    state.accountNumber ? 'none' : 'block';
+
+  updateBalanceUI();
+  loadTransactions();
+}
+
+/* ══════════════════════════════════════════════════
+   BALANCE UI
+══════════════════════════════════════════════════ */
+function updateBalanceUI() {
+  // Balance card
+  document.getElementById('balanceDisplay').textContent =
+    state.balanceHidden ? '₦ ••• •••'
+    : state.balance !== null ? fmt(state.balance) : '₦ — — —';
+
+  document.getElementById('balanceAcct').textContent =
+    state.accountNumber ? `Acc: ${state.accountNumber}` : 'No bank account yet';
+
+  // Balance panel
+  document.getElementById('bpAvail').textContent    = state.balance !== null ? fmt(state.balance) : '—';
+  document.getElementById('bpAcctNum').textContent  = state.accountNumber || '—';
+  document.getElementById('bpAcctName').textContent = state.accountName   || '—';
+
+  // Monthly in / out (from cached transactions)
+  const now = new Date();
+  let mIn = 0, mOut = 0;
+  state.transactions.forEach(tx => {
+    const d = new Date(tx.createdAt);
+    if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+      if (tx.to === state.accountNumber)   mIn  += Number(tx.amount);
+      else                                 mOut += Number(tx.amount);
+    }
+  });
+  document.getElementById('bpIn').textContent  = fmt(mIn);
+  document.getElementById('bpOut').textContent = fmt(mOut);
+}
+
+function toggleBalance() {
+  state.balanceHidden = !state.balanceHidden;
+  document.getElementById('balanceEye').textContent = state.balanceHidden ? 'Show' : 'Hide';
+  updateBalanceUI();
+}
+
+/* ══════════════════════════════════════════════════
+   REFRESH BALANCE
+   GET /api/transaction/balance/:accountNumber
+   → { accountName, accountNumber, balance }
+══════════════════════════════════════════════════ */
+async function refreshBalance() {
+  if (!state.accountNumber) {
+    toast('No bank account found. Create one first.', 'error');
+    return;
+  }
+  try {
+    const data        = await apiFetch(`/transaction/balance/${state.accountNumber}`);
+    state.balance       = data.balance      ?? state.balance;
+    state.accountName   = data.accountName  || state.accountName;
+    state.accountNumber = data.accountNumber || state.accountNumber;
+    updateBalanceUI();
+    toast('Balance refreshed', 'success');
+  } catch (err) {
+    toast(err.message || 'Could not refresh balance', 'error');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   CREATE BANK ACCOUNT
+   POST /api/account/create  (auth required)
+   → { accountNumber, balance, ... }
+══════════════════════════════════════════════════ */
+async function createBankAccount() {
+  setBtn('btnCreateAcct', 'createAcctText', true, '+ Create Bank Account');
+  try {
+    const data        = await apiFetch('/account/create', { method: 'POST' });
+    state.accountNumber = data.accountNumber;
+    state.balance       = data.balance ?? 0;
+    document.getElementById('noAccountBanner').style.display = 'none';
+    updateBalanceUI();
+    toast('Bank account created successfully!', 'success');
+  } catch (err) {
+    toast(err.message || 'Could not create account', 'error');
+  } finally {
+    setBtn('btnCreateAcct', 'createAcctText', false, '+ Create Bank Account');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TRANSACTION HISTORY
+   GET /api/transaction/history  (auth required)
+   → [ { from, to, amount, transactionId, status, createdAt } ]
+══════════════════════════════════════════════════ */
+async function loadTransactions() {
+  if (!state.accountNumber) return; // no point if no account
+  try {
+    const txs          = await apiFetch('/transaction/history');
+    state.transactions   = Array.isArray(txs) ? txs : [];
+    renderTransactions();
+    updateBalanceUI();
+  } catch (err) {
+    document.getElementById('txList').innerHTML =
+      `<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">
+        ${err.message || 'Could not load transactions'}
+       </div>`;
+  }
+}
+
+function renderTransactions() {
+  const list = document.getElementById('txList');
+  const txs  = state.transactions;
+
+  if (!txs.length) {
+    list.innerHTML =
+      '<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">No transactions yet.</div>';
+    return;
+  }
+
+  const myAcct = state.accountNumber;
+  list.innerHTML = txs.slice(0, 30).map(tx => {
+    const isCredit   = tx.to === myAcct;
+    const icon       = isCredit ? '⬇' : '⬆';
+    const label      = isCredit ? `From: ${tx.from}` : `To: ${tx.to}`;
+    const date       = new Date(tx.createdAt).toLocaleDateString('en-NG',
+                       { day: 'numeric', month: 'short', year: 'numeric' });
+    const statusClr  = tx.status === 'success' ? '#2ecc71'
+                     : tx.status === 'pending'  ? '#f39c12' : '#e74c3c';
+    return `
+      <div class="tx-item">
+        <div class="tx-left">
+          <div class="tx-icon ${isCredit ? 'credit' : 'debit'}">${icon}</div>
+          <div>
+            <div class="tx-desc">${label}</div>
+            <div class="tx-meta">
+              ${date} &nbsp;·&nbsp;
+              <span style="color:${statusClr};font-size:11px;font-weight:700;">
+                ${tx.status || 'unknown'}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="tx-amount ${isCredit ? 'credit' : 'debit'}">
+          ${isCredit ? '+' : '-'}${fmt(tx.amount)}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   NAME ENQUIRY
+   GET /api/transaction/name-enquiry/:accountNumber
+   → { accountName, accountNumber, ... }
+══════════════════════════════════════════════════ */
+async function lookupAccountName(accountNumber) {
+  const hint      = document.getElementById('nameEnquiryResult');
+  const nameField = document.getElementById('tfRecipient');
+
+  hint.style.color = 'var(--text-muted)';
+  hint.textContent = 'Looking up account...';
+  nameField.value  = '';
+
+  try {
+    const data = await apiFetch(`/transaction/name-enquiry/${accountNumber}`);
+    const name = data.accountName || data.name || data.fullName || '';
+    if (name) {
+      hint.style.color = '#2ecc71';
+      hint.textContent = `✓ ${name}`;
+      nameField.value  = name;
+    } else {
+      hint.style.color = 'var(--text-muted)';
+      hint.textContent = 'Account found';
+    }
+  } catch (_) {
+    hint.style.color = '#e74c3c';
+    hint.textContent = '✗ Account not found';
+    nameField.value  = '';
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TRANSFER
+   POST /api/transaction/transfer  { from, to, amount }
+   → { message, transaction, newBalance }
+══════════════════════════════════════════════════ */
+let pendingTransfer = null;
+
+function initiateTransfer() {
+  if (!state.accountNumber) {
+    toast('You need a bank account to transfer funds', 'error'); return;
+  }
+
+  const toAcct    = document.getElementById('tfAcctNum').value.trim();
+  const recipient = document.getElementById('tfRecipient').value.trim();
+  const amount    = document.getElementById('tfAmount').value;
+  const narration = document.getElementById('tfNarration').value.trim();
+
+  if (!toAcct || toAcct.length !== 10)  { toast('Enter a valid 10-digit account number', 'error'); return; }
+  if (!recipient)                        { toast('Please wait for account name lookup', 'error'); return; }
+  if (!amount || Number(amount) < 1)     { toast('Enter a valid amount', 'error'); return; }
+  if (toAcct === state.accountNumber)    { toast("You can't transfer to yourself", 'error'); return; }
+  if (state.balance !== null && Number(amount) > state.balance) {
+    toast('Insufficient balance', 'error'); return;
+  }
+
+  pendingTransfer = { toAcct, recipient, amount, narration };
+
+  document.getElementById('m-to').textContent       = toAcct;
+  document.getElementById('m-name').textContent     = recipient;
+  document.getElementById('m-narration').textContent = narration || '—';
+  document.getElementById('m-amount').textContent   = fmt(amount);
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+async function executeTransfer() {
+  if (!pendingTransfer) return;
+  const btn = document.getElementById('btnConfirmTransfer');
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spinner"></span>&nbsp; Processing...';
+
+  try {
+    const data = await apiFetch('/transaction/transfer', {
+      method: 'POST',
+      body: JSON.stringify({
+        from:   state.accountNumber,
+        to:     pendingTransfer.toAcct,
+        amount: Number(pendingTransfer.amount)
+      })
+    });
+
+    if (data.newBalance !== undefined) {
+      state.balance = data.newBalance;
+      updateBalanceUI();
+    } else {
+      await refreshBalance();
+    }
+
+    await loadTransactions();
+    closeModal();
+    closePanel('transferPanel');
+
+    ['tfAcctNum','tfRecipient','tfAmount','tfNarration'].forEach(id =>
+      document.getElementById(id).value = ''
+    );
+    document.getElementById('nameEnquiryResult').textContent = '';
+
+    toast(`₦${Number(pendingTransfer.amount).toLocaleString()} sent to ${pendingTransfer.recipient} successfully!`, 'success');
+    pendingTransfer = null;
+
+  } catch (err) {
+    toast(err.message || 'Transfer failed', 'error');
+  } finally {
+    btn.disabled  = false;
+    btn.innerHTML = 'Send Money';
+  }
+}
+
+function closeModal() {
+  document.getElementById('confirmModal').classList.remove('show');
+  pendingTransfer = null;
+}
+
+/* ══════════════════════════════════════════════════
+   IDENTITY VERIFICATION
+   BVN — compared against state.user.bvn (stored on login)
+   NIN — informational (no dedicated route in your API)
+══════════════════════════════════════════════════ */
+function switchIdTab(tab, btn) {
+  document.querySelectorAll('.id-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.id-tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('verifyResult').innerHTML = '';
+}
+
+function verifyBvn() {
+  const bvn = document.getElementById('bvnInput').value.trim();
+  const dob = document.getElementById('bvnDob').value;
+  const el  = document.getElementById('verifyResult');
+
+  if (!bvn || bvn.length !== 11) { toast('Enter a valid 11-digit BVN', 'error'); return; }
+  if (!dob)                       { toast('Please enter your date of birth', 'error'); return; }
+
+  if (state.user && bvn === state.user.bvn) {
+    el.innerHTML = `
+      <div class="verify-result">
+        <div class="v-icon">✅</div>
+        <div class="v-title">BVN Verified</div>
+        <div class="v-sub">
+          BVN matches your registered account.<br>
+          Name: <strong>${state.accountName || state.user.firstName + ' ' + state.user.lastName}</strong>
+        </div>
+      </div>`;
+    toast('BVN verified!', 'success');
+  } else {
+    el.innerHTML = `
+      <div class="verify-result error">
+        <div class="v-icon">❌</div>
+        <div class="v-title">BVN Mismatch</div>
+        <div class="v-sub">The BVN entered does not match the one on your account.</div>
+      </div>`;
+  }
+}
+
+function verifyNin() {
+  const nin  = document.getElementById('ninInput').value.trim();
+  const name = document.getElementById('ninName').value.trim();
+  const el   = document.getElementById('verifyResult');
+
+  if (!nin || nin.length !== 11) { toast('Enter a valid 11-digit NIN', 'error'); return; }
+  if (!name)                     { toast('Enter your full name', 'error'); return; }
+
+  el.innerHTML = `
+    <div class="verify-result">
+      <div class="v-icon">ℹ️</div>
+      <div class="v-title">NIN Submitted</div>
+      <div class="v-sub">
+        NIN <strong>${nin}</strong> recorded for <strong>${name}</strong>.<br>
+        NIN verification requires a dedicated NIN endpoint. Contact your admin to enable it.
+      </div>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   PANELS
+══════════════════════════════════════════════════ */
+function openPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(id);
+  panel.classList.add('active');
+  if (id === 'historyPanel') loadTransactions();
+  if (id === 'balancePanel') updateBalanceUI();
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function closePanel(id) {
+  document.getElementById(id).classList.remove('active');
+}
+</script>
+</body>
+</html>
