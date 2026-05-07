@@ -1,185 +1,185 @@
-const axios = require("axios");
 const Transaction = require("../models/Transaction");
 const User = require("../models/User");
 const Account = require("../models/Account");
-const { nameEnquiry, nibssTransfer, generateToken, checkBalance, checkTransactionStatus } = require("../services/nibssService");
+const {
+  nameEnquiry,
+  nibssTransfer,
+  generateToken,
+  checkBalance: nibssCheckBalance,
+  checkTransactionStatus: nibssCheckStatus
+} = require("../services/nibssService");
 
+// ─── helper so we don't repeat this 5 times ───
+async function getNibssToken() {
+  return generateToken({
+    apiKey: process.env.API_KEY,
+    apiSecret: process.env.API_SECRET
+  });
+}
+
+// ─── helper to get verified user + account ───
+async function getUserAndAccount(email) {
+  const user = await User.findOne({ email });
+  if (!user) throw { status: 404, message: "User not found" };
+
+  const account = await Account.findOne({ user: user._id });
+  if (!account) throw { status: 404, message: "Account not found" };
+
+  return { user, account };
+}
 
 // -----------------------------
-// NAME ENQUIRY
+// NAME ENQUIRY  (no auth needed)
 // -----------------------------
 exports.getAccountName = async (req, res) => {
   const { accountNumber } = req.params;
+  const { bankCode } = req.query; // ← add this
 
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // 🔥 extract token
-
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-   const nibssToken= await generateToken({
-      apiKey: process.env.API_KEY,
-      apiSecret: process.env.API_SECRET
-    });
-
-    const result = await nameEnquiry(accountNumber, nibssToken);
-
+    const nibssToken = await getNibssToken();
+    const result = await nameEnquiry(accountNumber, nibssToken, bankCode); // ← pass bankCode
     return res.json(result);
-
   } catch (err) {
-    console.log(err.response?.data || err.message);
+    console.error(err.response?.data || err.message);
     res.status(500).json({ message: "Name enquiry failed" });
   }
 };
-
 
 // -----------------------------
 // TRANSFER
 // -----------------------------
 exports.transfer = async (req, res) => {
-  const { from, to, amount } = req.body;
+  const { from, to, amount } = req.body; // ← back to just these 3
+
+  if (!from || !to || !amount) {
+    return res.status(400).json({ message: "from, to and amount are required" });
+  }
 
   try {
-    const  user= await User.findOne({ email: req.user.email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const { user, account } = await getUserAndAccount(req.user.email);
+
+    if (account.accountNumber !== from) {
+      return res.status(403).json({ message: "Unauthorized: account mismatch" });
     }
 
-
-     const  account= await Account.findOne({ user: user._id });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
+    if (account.balance < amount) {
+      return res.status(400).json({ message: "Insufficient balance" });
     }
 
-    if(account.accountNumber !== from){
-      return res.status(403).json({ message: "Unauthorized" });
-    }
+    const nibssToken = await getNibssToken();
 
-const nibssToken= await generateToken({
-      apiKey: process.env.API_KEY,
-      apiSecret: process.env.API_SECRET
-    });
-
-    // 1. Call NIBSS transfer API
+    // NIBSS handles inter-bank routing automatically
     const response = await nibssTransfer({ from, to, amount }, nibssToken);
 
-    // 2. Save transaction locally
+    account.balance -= Number(amount);
+    await account.save();
+
     const tx = await Transaction.create({
+      user: user._id,
       from,
       to,
       amount,
       transactionId: response.reference,
-      status: response.status
+      status: response.status || "success"
     });
 
-    // 3. RETURN RESPONSE (THIS WAS MISSING)
-    return res.json(tx);
+    return res.json({
+      message: "Transfer successful",
+      transaction: tx,
+      newBalance: account.balance
+    });
 
   } catch (err) {
-    console.log(err.response?.data || err.message);
-    res.status(500).json({ message: "Transfer failed" });
+    console.error(err.response?.data || err.message);
+    res.status(err.status || 500).json({ message: err.message || "Transfer failed" });
   }
 };
-
-
+// -----------------------------
+// TRANSACTION HISTORY
+// -----------------------------
 exports.getHistory = async (req, res) => {
-
   try {
-
-    const  user= await User.findOne({ email: req.user.email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-
-     const  account= await Account.findOne({ user: user._id });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
-    }
-
+    const { account } = await getUserAndAccount(req.user.email);
 
     const transactions = await Transaction.find({
-      $or: [{ from: account.accountNumber }, { to: account.accountNumber }]
+      $or: [
+        { from: account.accountNumber },
+        { to: account.accountNumber }
+      ]
     }).sort({ createdAt: -1 });
 
-
-    // 3. RETURN RESPONSE (THIS WAS MISSING)
     return res.json(transactions);
 
   } catch (err) {
-    console.log(err.response?.data || err.message);
-    res.status(500).json({ message: "failed to get history" });
+    console.error(err.response?.data || err.message);
+    res.status(err.status || 500).json({ message: err.message || "Failed to get history" });
   }
 };
 
-
+// -----------------------------
+// CHECK BALANCE  (live from NIBSS)
+// -----------------------------
 exports.checkBalance = async (req, res) => {
   const { accountNumber } = req.params;
 
   try {
-    
-     const  user= await User.findOne({ email: req.user.email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const { account } = await getUserAndAccount(req.user.email);
+
+    if (account.accountNumber !== accountNumber) {
+      return res.status(403).json({ message: "Unauthorized: account mismatch" });
     }
 
+    const nibssToken = await getNibssToken();
+    const result = await nibssCheckBalance(accountNumber, nibssToken);
 
-     const  account= await Account.findOne({ user: user._id });
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
-    }
+    // Keep MongoDB in sync with whatever NIBSS says
+    account.balance = result.balance ?? account.balance;
+    await account.save();
 
-    if(account.accountNumber !== accountNumber){
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-   const nibssToken= await generateToken({
-      apiKey: process.env.API_KEY,
-      apiSecret: process.env.API_SECRET
+    // Always return these 3 fields so the frontend knows what to expect
+    return res.json({
+      accountName: result.accountName,
+      accountNumber: result.accountNumber || accountNumber,
+      balance: result.balance
     });
 
-    const result = await checkBalance(accountNumber, nibssToken);
-
-    return res.json(result);
-
   } catch (err) {
-    console.log(err.response?.data || err.message);
-    res.status(500).json({ message: "Check balance failed" });
+    console.error(err.response?.data || err.message);
+    res.status(err.status || 500).json({ message: err.message || "Check balance failed" });
   }
 };
 
+// -----------------------------
+// CHECK TRANSACTION STATUS
+// -----------------------------
 exports.checkTransactionStatus = async (req, res) => {
   const { ref } = req.params;
 
   try {
-    
-     const  user= await User.findOne({ email: req.user.email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const { user } = await getUserAndAccount(req.user.email);
 
+    const transaction = await Transaction.findOne({
+      user: user._id,
+      transactionId: ref
+    });
 
-     const  transactions= await Transaction.find({ user: user._id });
-    if (transactions.length === 0) {
+    if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
+    const nibssToken = await getNibssToken();
+    const result = await nibssCheckStatus(ref, nibssToken);
 
-      const transaction = transactions.find(tx => tx.transactionId === ref);
-    if(transaction.transactionId !== ref){
-      return res.status(403).json({ message: "Unauthorized" });
+    // Update local status if NIBSS returns a new one
+    if (result.status && result.status !== transaction.status) {
+      transaction.status = result.status;
+      await transaction.save();
     }
-   const nibssToken= await generateToken({
-      apiKey: process.env.API_KEY,
-      apiSecret: process.env.API_SECRET
-    });
-
-    const result = await checkTransactionStatus(ref, nibssToken);
 
     return res.json(result);
 
   } catch (err) {
-    console.log(err.response?.data || err.message);
-    res.status(500).json({ message: "Check transaction status failed" });
+    console.error(err.response?.data || err.message);
+    res.status(err.status || 500).json({ message: err.message || "Check status failed" });
   }
 };
