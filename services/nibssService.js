@@ -1,4 +1,4 @@
-const axios= require("axios");
+const axios = require("axios");
 
 exports.validateBVN = async (bvn) => {
   try {
@@ -6,9 +6,7 @@ exports.validateBVN = async (bvn) => {
       `${process.env.NIBSS_BASE_URL}/api/validateBvn`,
       { bvn }
     );
-
-    console.log("🔍 BVN RESPONSE:", response.data); // ADD THIS
-
+    console.log("🔍 BVN RESPONSE:", response.data);
     return response.data;
   } catch (error) {
     console.log(error.response?.data || error.message);
@@ -16,23 +14,20 @@ exports.validateBVN = async (bvn) => {
   }
 };
 
-
 exports.createAccount = async ({ kycType, kycID, dob }, token) => {
   try {
     const config = {
-        headers: {
-            'Authorization': `Bearer ${token}`, // Your captured JWT
-            'Content-Type': 'application/json'  // Tells the 3rd party you're sending JSON
-        }
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
     };
-
     const response = await axios.post(
       `${process.env.NIBSS_BASE_URL}/api/account/create`,
-      { kycType, kycID, dob }, config
+      { kycType, kycID, dob },
+      config
     );
-
-    console.log("🔍 ACCOUNT CREATION RESPONSE:", response.data.account); // ADD THIS
-
+    console.log("🔍 ACCOUNT CREATION RESPONSE:", response.data.account);
     return response.data.account;
   } catch (error) {
     console.log(error.response?.data || error.message);
@@ -46,9 +41,7 @@ exports.generateToken = async ({ apiKey, apiSecret }) => {
       `${process.env.NIBSS_BASE_URL}/api/auth/token`,
       { apiKey, apiSecret }
     );
-
-    console.log("🔍 TOKEN GENERATION RESPONSE:", response.data.token); // ADD THIS
-
+    console.log("🔍 TOKEN RESPONSE:", response.data.token);
     return response.data.token;
   } catch (error) {
     console.log(error.response?.data || error.message);
@@ -56,7 +49,8 @@ exports.generateToken = async ({ apiKey, apiSecret }) => {
   }
 };
 
-exports.nameEnquiry = async (accountNumber, token) => {
+// ✅ Updated — now accepts optional bankCode for inter-bank lookup
+exports.nameEnquiry = async (accountNumber, token, bankCode = null) => {
   try {
     const config = {
       headers: {
@@ -65,13 +59,13 @@ exports.nameEnquiry = async (accountNumber, token) => {
       }
     };
 
-    const response = await axios.get(
-      `${process.env.NIBSS_BASE_URL}/api/account/name-enquiry/${accountNumber}`,
-      config
-    );
+    // Build URL — append bankCode as query param if provided
+    const url = bankCode
+      ? `${process.env.NIBSS_BASE_URL}/api/account/name-enquiry/${accountNumber}?bankCode=${bankCode}`
+      : `${process.env.NIBSS_BASE_URL}/api/account/name-enquiry/${accountNumber}`;
 
-    console.log("🔍 RESPONSE:", response.data);
-
+    const response = await axios.get(url, config);
+    console.log("🔍 NAME ENQUIRY RESPONSE:", response.data);
     return response.data;
   } catch (error) {
     console.log(error.response?.data || error.message);
@@ -90,12 +84,10 @@ exports.nibssTransfer = async ({ from, to, amount }, token) => {
 
     const response = await axios.post(
       `${process.env.NIBSS_BASE_URL}/api/transfer`,
-      { from, to, amount },
+      { from, to, amount }, // ← exactly what NIBSS expects
       config
     );
-
-    console.log("🔍 TRANSFER SUCCESSFUL RESPONSE:", response.data);
-
+    console.log("🔍 TRANSFER RESPONSE:", response.data);
     return response.data;
   } catch (error) {
     console.log(error.response?.data || error.message);
@@ -111,21 +103,17 @@ exports.checkBalance = async (accountNumber, token) => {
         "Content-Type": "application/json"
       }
     };
-
     const response = await axios.get(
       `${process.env.NIBSS_BASE_URL}/api/account/balance/${accountNumber}`,
       config
     );
-
-    console.log("🔍 RESPONSE:", response.data);
-
+    console.log("🔍 BALANCE RESPONSE:", response.data);
     return response.data;
   } catch (error) {
     console.log(error.response?.data || error.message);
-    throw new Error("check balance failed");
+    throw new Error("Check balance failed");
   }
 };
-
 
 exports.checkTransactionStatus = async (ref, token) => {
   try {
@@ -135,17 +123,14 @@ exports.checkTransactionStatus = async (ref, token) => {
         "Content-Type": "application/json"
       }
     };
-
     const response = await axios.get(
       `${process.env.NIBSS_BASE_URL}/api/transaction/${ref}`,
       config
     );
-
-    console.log("🔍 RESPONSE:", response.data);
-
+    console.log("🔍 STATUS RESPONSE:", response.data);
     return response.data;
   } catch (error) {
     console.log(error.response?.data || error.message);
-    throw new Error("check transaction status failed");
+    throw new Error("Check transaction status failed");
   }
 };
