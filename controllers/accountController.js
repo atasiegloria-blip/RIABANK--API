@@ -40,3 +40,42 @@ exports.createAccount = async (req, res) => {
     res.status(500).json(err.message);
   }
 };
+
+
+exports.getAccount = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    const account = await Account.findOne({ user: user._id });
+
+    if (!account) {
+      return res.status(404).json({ message: "No account found. Please create one first." });
+    }
+
+    res.json({
+      accountNumber: account.accountNumber,
+      balance: account.balance,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getTransactions = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    const account = await Account.findOne({ user: user._id });
+
+    if (!account) {
+      return res.status(404).json({ message: "No account found." });
+    }
+
+    // If your Account model has a transactions array use this:
+    res.json({ transactions: account.transactions || [] });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
