@@ -30,11 +30,9 @@
     overflow-x: hidden;
   }
 
-  /* ─── PAGES ─── */
   .page { display: none; min-height: 100vh; }
   .page.active { display: flex; }
 
-  /* ─── TOAST ─── */
   #toast {
     position: fixed; top: 20px; right: 20px; z-index: 9999;
     padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
@@ -42,11 +40,11 @@
     transform: translateY(-80px); opacity: 0; transition: all 0.35s ease;
     max-width: 320px; pointer-events: none;
   }
-  #toast.show  { transform: translateY(0); opacity: 1; }
+  #toast.show    { transform: translateY(0); opacity: 1; }
   #toast.error   { border-color: var(--danger); color: #e74c3c; }
   #toast.success { border-color: var(--success); color: #2ecc71; }
+  #toast.info    { border-color: var(--gold); color: var(--gold); }
 
-  /* ─── SPINNER ─── */
   .spinner {
     width: 18px; height: 18px;
     border: 2px solid rgba(255,255,255,0.3);
@@ -54,18 +52,16 @@
     animation: spin 0.7s linear infinite;
     display: inline-block; vertical-align: middle;
   }
-  @keyframes spin    { to { transform: rotate(360deg); } }
-  @keyframes fadeUp  { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin   { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ══════════════════════════
-     AUTH PAGES
-  ══════════════════════════ */
-  #loginPage, #registerPage {
+  /* ── AUTH PAGES ── */
+  #loginPage, #registerPage, #forgotPage {
     background: linear-gradient(135deg, #0B1C3E 0%, #162B5B 50%, #0B1C3E 100%);
     align-items: center; justify-content: center;
     padding: 24px; position: relative;
   }
-  #loginPage::before, #registerPage::before {
+  #loginPage::before, #registerPage::before, #forgotPage::before {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background: radial-gradient(ellipse at 70% 20%, rgba(200,151,58,0.08) 0%, transparent 60%),
                 radial-gradient(ellipse at 20% 80%, rgba(200,151,58,0.05) 0%, transparent 50%);
@@ -123,15 +119,13 @@
   .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
   .auth-footer {
-    text-align: center; margin-top: 22px;
+    text-align: center; margin-top: 14px;
     font-size: 13px; color: var(--text-muted);
   }
   .auth-footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
   .auth-footer a:hover { text-decoration: underline; }
 
-  /* ══════════════════════════
-     APP SHELL
-  ══════════════════════════ */
+  /* ── APP SHELL ── */
   #appPage { flex-direction: column; background: #0D1520; min-height: 100vh; }
 
   .topnav {
@@ -142,10 +136,7 @@
     position: sticky; top: 0; z-index: 100;
     backdrop-filter: blur(12px);
   }
-  .topnav-brand {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 3px;
-  }
+  .topnav-brand { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 3px; }
   .topnav-right { display: flex; align-items: center; gap: 12px; }
   .avatar {
     width: 36px; height: 36px; border-radius: 50%;
@@ -157,14 +148,12 @@
   .btn-logout {
     background: none; border: 1px solid rgba(200,151,58,0.3);
     color: var(--text-muted); padding: 6px 14px; border-radius: 8px;
-    font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: all 0.2s;
+    font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
   }
   .btn-logout:hover { border-color: var(--danger); color: #e74c3c; }
 
   .app-body { flex: 1; padding: 24px 20px; max-width: 800px; margin: 0 auto; width: 100%; }
 
-  /* Welcome */
   .welcome-banner {
     background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
     border: 1px solid var(--border); border-radius: var(--radius);
@@ -172,31 +161,25 @@
     position: relative; overflow: hidden; animation: fadeUp 0.4s ease both;
   }
   .welcome-banner::after {
-    content: 'RIABANK';
-    position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+    content: 'RIABANK'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
     font-family: 'Playfair Display', serif; font-size: 76px;
-    color: rgba(200,151,58,0.05); letter-spacing: 4px;
-    pointer-events: none; font-weight: 700;
+    color: rgba(200,151,58,0.05); letter-spacing: 4px; pointer-events: none; font-weight: 700;
   }
   .welcome-greeting { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
   .welcome-name     { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 3px; }
   .welcome-date     { font-size: 12px; color: var(--text-muted); }
 
-  /* No-account banner */
   .no-account-banner {
     display: none;
     background: rgba(200,151,58,0.07); border: 1px dashed rgba(200,151,58,0.5);
-    border-radius: var(--radius); padding: 20px 24px;
-    margin-bottom: 18px; text-align: center;
+    border-radius: var(--radius); padding: 20px 24px; margin-bottom: 18px; text-align: center;
   }
   .no-account-banner p { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
 
-  /* Balance Card */
   .balance-card {
     background: linear-gradient(135deg, #C8973A 0%, #8A6420 100%);
     border-radius: var(--radius); padding: 26px 28px;
-    margin-bottom: 18px; position: relative; overflow: hidden;
-    animation: fadeUp 0.5s ease both;
+    margin-bottom: 18px; position: relative; overflow: hidden; animation: fadeUp 0.5s ease both;
   }
   .balance-card::before {
     content: ''; position: absolute; top: -40px; right: -40px;
@@ -206,22 +189,14 @@
     content: ''; position: absolute; bottom: -20px; left: 30px;
     width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05);
   }
-  .balance-label {
-    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-    color: rgba(11,28,62,0.65); font-weight: 700; margin-bottom: 6px;
-  }
-  .balance-amount {
-    font-family: 'Playfair Display', serif;
-    font-size: 40px; font-weight: 700; color: var(--navy);
-    margin-bottom: 4px; position: relative; z-index: 1;
-  }
+  .balance-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(11,28,62,0.65); font-weight: 700; margin-bottom: 6px; }
+  .balance-amount { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 700; color: var(--navy); margin-bottom: 4px; position: relative; z-index: 1; }
   .balance-acct { font-size: 13px; color: rgba(11,28,62,0.55); font-weight: 500; position: relative; z-index: 1; }
   .balance-refresh {
     position: absolute; top: 18px; right: 18px; z-index: 2;
     background: rgba(11,28,62,0.15); border: none; color: var(--navy);
     width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-    font-size: 16px; transition: transform 0.35s;
-    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; transition: transform 0.35s; display: flex; align-items: center; justify-content: center;
   }
   .balance-refresh:hover { transform: rotate(180deg); }
   .balance-eye {
@@ -232,33 +207,21 @@
   }
   .balance-eye:hover { background: rgba(11,28,62,0.25); }
 
-  /* Quick Actions */
-  .section-title {
-    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--text-muted); font-weight: 600; margin-bottom: 12px;
-  }
-  .quick-actions {
-    display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
-    margin-bottom: 22px; animation: fadeUp 0.55s ease both;
-  }
+  .section-title { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 12px; }
+  .quick-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 22px; animation: fadeUp 0.55s ease both; }
   .action-btn {
     background: rgba(255,255,255,0.04); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 16px 10px; text-align: center;
-    cursor: pointer; transition: all 0.2s;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;
   }
   .action-btn:hover { background: rgba(200,151,58,0.1); border-color: var(--gold); transform: translateY(-2px); }
-  .action-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; font-size: 20px;
-  }
+  .action-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
   .action-icon.transfer { background: rgba(200,151,58,0.15); }
   .action-icon.balance  { background: rgba(30,58,120,0.4); }
   .action-icon.history  { background: rgba(26,122,74,0.2); }
   .action-icon.identity { background: rgba(192,57,43,0.15); }
   .action-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
-  /* Panels */
   .panel {
     display: none; background: rgba(255,255,255,0.04);
     border: 1px solid var(--border); border-radius: var(--radius);
@@ -267,23 +230,17 @@
   .panel.active { display: block; }
   .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
   .panel-title  { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
-  .btn-close-panel {
-    background: none; border: none; color: var(--text-muted);
-    font-size: 20px; cursor: pointer; line-height: 1; transition: color 0.2s;
-  }
+  .btn-close-panel { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; line-height: 1; transition: color 0.2s; }
   .btn-close-panel:hover { color: var(--white); }
 
-  /* Panel inputs */
   .panel .form-group label { color: rgba(255,255,255,0.45); }
   .panel .form-group input,
   .panel .form-group select,
   .panel .form-group textarea {
     width: 100%; padding: 13px 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
     border-radius: 10px; color: var(--white);
-    font-family: 'DM Sans', sans-serif; font-size: 15px;
-    outline: none; transition: border-color 0.2s;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s;
   }
   .panel .form-group input::placeholder,
   .panel .form-group textarea::placeholder { color: rgba(255,255,255,0.22); }
@@ -297,49 +254,31 @@
   .name-hint { margin-top: 6px; font-size: 13px; min-height: 18px; font-weight: 500; }
 
   .btn-gold {
-    background: var(--gold); color: var(--navy);
-    border: none; border-radius: 10px; padding: 13px 26px;
+    background: var(--gold); color: var(--navy); border: none; border-radius: 10px; padding: 13px 26px;
     font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
   }
   .btn-gold:hover    { background: #d4a440; transform: translateY(-1px); }
   .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  /* Balance detail stats */
   .stat-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
-  .stat-card {
-    flex: 1; min-width: 130px;
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px;
-  }
+  .stat-card { flex: 1; min-width: 130px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
   .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
   .stat-value { font-size: 18px; font-weight: 700; }
   .stat-value.green { color: #2ecc71; }
   .stat-value.red   { color: #e74c3c; }
 
-  .acct-box {
-    background: rgba(200,151,58,0.07); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px; margin-bottom: 18px;
-  }
+  .acct-box { background: rgba(200,151,58,0.07); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 18px; }
   .acct-box-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
   .acct-box-num   { font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
   .acct-box-name  { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
   .acct-box-type  { font-size: 12px; color: var(--text-muted); }
 
-  /* Transaction list */
   .tx-list { display: flex; flex-direction: column; }
-  .tx-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
+  .tx-item { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .tx-item:last-child { border-bottom: none; }
   .tx-left  { display: flex; align-items: center; gap: 12px; }
-  .tx-icon  {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
-  }
+  .tx-icon  { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .tx-icon.credit { background: rgba(26,122,74,0.2); }
   .tx-icon.debit  { background: rgba(192,57,43,0.15); }
   .tx-desc   { font-size: 14px; font-weight: 500; }
@@ -348,57 +287,30 @@
   .tx-amount.credit { color: #2ecc71; }
   .tx-amount.debit  { color: #e74c3c; }
 
-  /* Identity tabs */
   .id-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-  .id-tab {
-    padding: 8px 20px; border-radius: 8px;
-    border: 1px solid var(--border); background: none;
-    color: var(--text-muted); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  }
+  .id-tab { padding: 8px 20px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .id-tab.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
   .id-tab-content { display: none; }
   .id-tab-content.active { display: block; }
 
-  .verify-result {
-    border-radius: 10px; padding: 16px; margin-top: 16px;
-    background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.3);
-  }
+  .verify-result { border-radius: 10px; padding: 16px; margin-top: 16px; background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.3); }
   .verify-result.error { background: rgba(192,57,43,0.1); border-color: rgba(192,57,43,0.3); }
   .verify-result .v-icon  { font-size: 24px; margin-bottom: 8px; }
   .verify-result .v-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
   .verify-result .v-sub   { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-  /* Confirm Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.65); z-index: 200;
-    align-items: center; justify-content: center; padding: 20px;
-    backdrop-filter: blur(5px);
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
   .modal-overlay.show { display: flex; }
-  .modal-box {
-    background: #0D1D3A; border: 1px solid var(--border);
-    border-radius: 20px; padding: 32px; width: 100%; max-width: 380px;
-    animation: fadeUp 0.3s ease;
-  }
+  .modal-box { background: #0D1D3A; border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 380px; animation: fadeUp 0.3s ease; }
   .modal-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 20px; text-align: center; }
   .modal-rows  { display: flex; flex-direction: column; margin-bottom: 24px; }
-  .modal-row   {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
+  .modal-row   { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .modal-row:last-child { border-bottom: none; }
   .modal-row-label { font-size: 13px; color: var(--text-muted); }
   .modal-row-value { font-size: 14px; font-weight: 700; }
   .modal-row-value.gold { color: var(--gold); }
   .modal-actions { display: flex; gap: 12px; }
-  .btn-cancel {
-    flex: 1; padding: 13px; background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
-    color: var(--white); font-family: 'DM Sans', sans-serif;
-    font-size: 15px; cursor: pointer; transition: background 0.2s;
-  }
+  .btn-cancel { flex: 1; padding: 13px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer; transition: background 0.2s; }
   .btn-cancel:hover { background: rgba(255,255,255,0.12); }
 
   @media (max-width: 480px) {
@@ -419,29 +331,14 @@
   <div class="modal-box">
     <div class="modal-title">Confirm Transfer</div>
     <div class="modal-rows">
-      <div class="modal-row">
-        <span class="modal-row-label">To Account</span>
-        <span class="modal-row-value" id="m-to"></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-row-label">Account Name</span>
-        <span class="modal-row-value" id="m-name"></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-row-label">Narration</span>
-        <span class="modal-row-value" id="m-narration" style="font-size:13px;color:var(--text-muted);"></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-row-label">Amount</span>
-        <span class="modal-row-value gold" id="m-amount"></span>
-      </div>
+      <div class="modal-row"><span class="modal-row-label">To Account</span><span class="modal-row-value" id="m-to"></span></div>
+      <div class="modal-row"><span class="modal-row-label">Account Name</span><span class="modal-row-value" id="m-name"></span></div>
+      <div class="modal-row"><span class="modal-row-label">Narration</span><span class="modal-row-value" id="m-narration" style="font-size:13px;color:var(--text-muted);"></span></div>
+      <div class="modal-row"><span class="modal-row-label">Amount</span><span class="modal-row-value gold" id="m-amount"></span></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-gold" style="flex:1;justify-content:center;"
-              id="btnConfirmTransfer" onclick="executeTransfer()">
-        Send Money
-      </button>
+      <button class="btn-gold" style="flex:1;justify-content:center;" id="btnConfirmTransfer" onclick="executeTransfer()">Send Money</button>
     </div>
   </div>
 </div>
@@ -465,6 +362,10 @@
     <button class="btn-primary" id="btnLogin" onclick="handleLogin()">
       <span id="loginText">Sign In</span>
     </button>
+    <!-- ✅ FORGOT PASSWORD LINK -->
+    <p class="auth-footer">
+      <a href="#" onclick="showPage('forgotPage')">Forgot your password?</a>
+    </p>
     <p class="auth-footer">
       Don't have an account yet?
       <a href="#" onclick="showPage('registerPage')">Register here</a>
@@ -507,6 +408,33 @@
   </div>
 </div>
 
+<!-- ══════════════════════ FORGOT PASSWORD PAGE ══════════════════════ -->
+<div class="page" id="forgotPage">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-logo">RIABANK</span>
+      <span class="brand-sub">Reset Password</span>
+      <div class="brand-line"></div>
+    </div>
+    <p class="hint">
+      Enter your registered email address and we'll send you a secure link
+      to reset your password. The link expires in
+      <strong style="color:var(--gold);">15 minutes</strong>.
+    </p>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="forgotEmail" placeholder="your@email.com" />
+    </div>
+    <button class="btn-primary" id="btnForgot" onclick="handleForgotPassword()">
+      <span id="forgotText">Send Reset Link</span>
+    </button>
+    <p class="auth-footer">
+      Remember your password?
+      <a href="#" onclick="showPage('loginPage')">Sign in here</a>
+    </p>
+  </div>
+</div>
+
 <!-- ══════════════════════ APP PAGE ══════════════════════ -->
 <div class="page" id="appPage" style="flex-direction:column;">
 
@@ -521,14 +449,12 @@
 
   <div class="app-body">
 
-    <!-- Welcome Banner -->
     <div class="welcome-banner">
       <div class="welcome-greeting">Welcome back</div>
       <div class="welcome-name" id="welcomeName">—</div>
       <div class="welcome-date" id="welcomeDate"></div>
     </div>
 
-    <!-- No-Account Banner -->
     <div class="no-account-banner" id="noAccountBanner">
       <p>You don't have a NIBSS bank account yet.<br>Create one to start transacting on RIABANK.</p>
       <button class="btn-gold" id="btnCreateAcct" onclick="createBankAccount()">
@@ -536,7 +462,6 @@
       </button>
     </div>
 
-    <!-- Balance Card -->
     <div class="balance-card">
       <button class="balance-refresh" onclick="refreshBalance()" title="Refresh">↻</button>
       <button class="balance-eye" id="balanceEye" onclick="toggleBalance()">Hide</button>
@@ -545,7 +470,6 @@
       <div class="balance-acct"   id="balanceAcct">—</div>
     </div>
 
-    <!-- Quick Actions -->
     <p class="section-title">What would you like to do?</p>
     <div class="quick-actions">
       <div class="action-btn" onclick="openPanel('transferPanel')">
@@ -566,7 +490,7 @@
       </div>
     </div>
 
-    <!-- ── TRANSFER PANEL ── -->
+    <!-- TRANSFER PANEL -->
     <div class="panel" id="transferPanel">
       <div class="panel-header">
         <span class="panel-title">Send Money</span>
@@ -594,25 +518,16 @@
       <button class="btn-gold" onclick="initiateTransfer()">Review Transfer</button>
     </div>
 
-    <!-- ── BALANCE PANEL ── -->
+    <!-- BALANCE PANEL -->
     <div class="panel" id="balancePanel">
       <div class="panel-header">
         <span class="panel-title">Account Balance</span>
         <button class="btn-close-panel" onclick="closePanel('balancePanel')">✕</button>
       </div>
       <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Available</div>
-          <div class="stat-value green" id="bpAvail">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Month In</div>
-          <div class="stat-value green" id="bpIn">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Month Out</div>
-          <div class="stat-value red" id="bpOut">—</div>
-        </div>
+        <div class="stat-card"><div class="stat-label">Available</div><div class="stat-value green" id="bpAvail">—</div></div>
+        <div class="stat-card"><div class="stat-label">Month In</div><div class="stat-value green" id="bpIn">—</div></div>
+        <div class="stat-card"><div class="stat-label">Month Out</div><div class="stat-value red" id="bpOut">—</div></div>
       </div>
       <div class="acct-box">
         <div class="acct-box-label">Account Number</div>
@@ -624,20 +539,18 @@
       <button class="btn-gold" onclick="refreshBalance()">↻ &nbsp;Refresh Balance</button>
     </div>
 
-    <!-- ── HISTORY PANEL ── -->
+    <!-- HISTORY PANEL -->
     <div class="panel" id="historyPanel">
       <div class="panel-header">
         <span class="panel-title">Transactions</span>
         <button class="btn-close-panel" onclick="closePanel('historyPanel')">✕</button>
       </div>
       <div class="tx-list" id="txList">
-        <div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">
-          Loading transactions...
-        </div>
+        <div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">Loading transactions...</div>
       </div>
     </div>
 
-    <!-- ── IDENTITY PANEL ── -->
+    <!-- IDENTITY PANEL -->
     <div class="panel" id="identityPanel">
       <div class="panel-header">
         <span class="panel-title">Verify Identity</span>
@@ -645,13 +558,12 @@
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.7;">
         Your identity is verified through your BVN during registration.
-        Use this panel to confirm your BVN details at any time.
+        Use this panel to verify your BVN if your account is unverified.
       </p>
       <div class="id-tabs">
         <button class="id-tab active" onclick="switchIdTab('bvn',this)">BVN</button>
         <button class="id-tab"        onclick="switchIdTab('nin',this)">NIN</button>
       </div>
-
       <div class="id-tab-content active" id="tab-bvn">
         <div class="form-group">
           <label>Bank Verification Number</label>
@@ -663,7 +575,6 @@
         </div>
         <button class="btn-gold" onclick="verifyBvn()">🛡 &nbsp;Verify BVN</button>
       </div>
-
       <div class="id-tab-content" id="tab-nin">
         <div class="form-group">
           <label>National Identification Number</label>
@@ -675,16 +586,15 @@
         </div>
         <button class="btn-gold" onclick="verifyNin()">🛡 &nbsp;Verify NIN</button>
       </div>
-
       <div id="verifyResult"></div>
     </div>
 
-  </div><!-- /app-body -->
-</div><!-- /appPage -->
+  </div>
+</div>
 
 <script>
 /* ══════════════════════════════════════════════════
-   CONFIG  —  change this to your deployed URL later
+   CONFIG
 ══════════════════════════════════════════════════ */
 const API_BASE = 'https://riabank-api.onrender.com/api';
 
@@ -692,13 +602,9 @@ const API_BASE = 'https://riabank-api.onrender.com/api';
    STATE
 ══════════════════════════════════════════════════ */
 let state = {
-  token:         null,
-  user:          null,   // { id, email, firstName, lastName, bvn }
-  accountNumber: null,
-  accountName:   null,
-  balance:       null,
-  balanceHidden: false,
-  transactions:  []
+  token: null, user: null,
+  accountNumber: null, accountName: null,
+  balance: null, balanceHidden: false, transactions: []
 };
 
 /* ══════════════════════════════════════════════════
@@ -718,9 +624,7 @@ function toast(msg, type = 'info') {
 }
 
 function fmt(n) {
-  return '₦ ' + Number(n).toLocaleString('en-NG', {
-    minimumFractionDigits: 2, maximumFractionDigits: 2
-  });
+  return '₦ ' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function setBtn(btnId, spanId, loading, label) {
@@ -733,26 +637,16 @@ function setBtn(btnId, spanId, loading, label) {
 async function apiFetch(endpoint, opts = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
-  const res  = await fetch(API_BASE + endpoint, {
-    ...opts, headers: { ...headers, ...(opts.headers || {}) }
-  });
+  const res  = await fetch(API_BASE + endpoint, { ...opts, headers: { ...headers, ...(opts.headers || {}) } });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
   return data;
 }
 
 /* ══════════════════════════════════════════════════
-   AUTH — LOGIN
-   POST /api/auth/login  { email, password }
-   → { token, user: { id, email, firstName, lastName, bvn } }
-
-   Then chains:
-   GET  /api/account/me
-   → { accountNumber, accountName }
-
-   Then chains:
-   GET  /api/transaction/balance/:accountNumber
-   → { accountName, accountNumber, balance }
+   LOGIN
+   POST /api/auth/login { email, password }
+   → { token, user: { id, email, firstName, lastName, bvn, isVerified } }
 ══════════════════════════════════════════════════ */
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -761,7 +655,6 @@ async function handleLogin() {
 
   setBtn('btnLogin', 'loginText', true, 'Sign In');
   try {
-    // 1. Login
     const auth = await apiFetch('/auth/login', {
       method: 'POST',
       body:   JSON.stringify({ email, password: pass })
@@ -769,31 +662,27 @@ async function handleLogin() {
     state.token = auth.token;
     state.user  = auth.user;
 
-    // 2. Get account number from MongoDB
     try {
       const acct        = await apiFetch('/account/me');
       state.accountNumber = acct.accountNumber || null;
-      state.accountName   = acct.accountName   ||
-                            `${auth.user.firstName} ${auth.user.lastName}`;
+      state.accountName   = acct.accountName   || `${auth.user.firstName} ${auth.user.lastName}`;
     } catch (_) {
-      state.accountNumber = null; // no bank account yet
+      state.accountNumber = null;
       state.accountName   = `${auth.user.firstName} ${auth.user.lastName}`;
     }
 
-    // 3. Get live balance from NIBSS (only if account exists)
     if (state.accountNumber) {
       try {
         const bal         = await apiFetch(`/transaction/balance/${state.accountNumber}`);
-        state.balance       = bal.balance     ?? null;
-        state.accountName   = bal.accountName || state.accountName;
+        state.balance       = bal.balance      ?? null;
+        state.accountName   = bal.accountName  || state.accountName;
         state.accountNumber = bal.accountNumber || state.accountNumber;
-      } catch (_) { /* balance unavailable — show — */ }
+      } catch (_) { /* balance unavailable */ }
     }
 
     toast('Login successful!', 'success');
     initApp();
     showPage('appPage');
-
   } catch (err) {
     toast(err.message || 'Login failed. Check your credentials.', 'error');
   } finally {
@@ -802,9 +691,9 @@ async function handleLogin() {
 }
 
 /* ══════════════════════════════════════════════════
-   AUTH — REGISTER
-   POST /api/auth/register  { email, bvn, password }
-   → { message, user: { firstName, ... } }
+   REGISTER
+   POST /api/auth/register { email, bvn, password }
+   → { message, user: { firstName, isVerified } }
 ══════════════════════════════════════════════════ */
 async function handleRegister() {
   const email = document.getElementById('regEmail').value.trim();
@@ -813,9 +702,9 @@ async function handleRegister() {
   const pass2 = document.getElementById('regPass2').value;
 
   if (!email || !bvn || !pass || !pass2) { toast('Please fill all fields', 'error'); return; }
-  if (bvn.length !== 11)  { toast('BVN must be exactly 11 digits', 'error'); return; }
-  if (pass !== pass2)     { toast('Passwords do not match', 'error'); return; }
-  if (pass.length < 8)    { toast('Password must be at least 8 characters', 'error'); return; }
+  if (bvn.length !== 11) { toast('BVN must be exactly 11 digits', 'error'); return; }
+  if (pass !== pass2)    { toast('Passwords do not match', 'error'); return; }
+  if (pass.length < 8)   { toast('Password must be at least 8 characters', 'error'); return; }
 
   setBtn('btnRegister', 'regText', true, 'Create Account');
   try {
@@ -823,11 +712,14 @@ async function handleRegister() {
       method: 'POST',
       body:   JSON.stringify({ email, bvn, password: pass })
     });
-    toast(
-      `Welcome ${data.user?.firstName || ''}! Account created. Please sign in.`,
-      'success'
-    );
-    setTimeout(() => showPage('loginPage'), 2200);
+
+    if (data.user?.isVerified) {
+      toast(`Welcome ${data.user.firstName}! Account created & BVN verified ✅ Please sign in.`, 'success');
+    } else {
+      toast('Account created! BVN unverified — please verify your BVN after login.', 'info');
+    }
+
+    setTimeout(() => showPage('loginPage'), 2500);
   } catch (err) {
     toast(err.message || 'Registration failed.', 'error');
   } finally {
@@ -835,11 +727,39 @@ async function handleRegister() {
   }
 }
 
+/* ══════════════════════════════════════════════════
+   FORGOT PASSWORD ✅ NEW
+   POST /api/auth/forgot-password { email }
+   → { message }
+   Backend sends reset email with link to reset-password.html
+══════════════════════════════════════════════════ */
+async function handleForgotPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email) { toast('Please enter your email address', 'error'); return; }
+
+  setBtn('btnForgot', 'forgotText', true, 'Send Reset Link');
+  try {
+    const data = await apiFetch('/auth/forgot-password', {
+      method: 'POST',
+      body:   JSON.stringify({ email })
+    });
+    // Always show the same message regardless (security best practice)
+    toast(data.message || 'If that email exists, a reset link has been sent.', 'success');
+    document.getElementById('forgotEmail').value = '';
+    // Redirect back to login after 3 seconds
+    setTimeout(() => showPage('loginPage'), 3000);
+  } catch (err) {
+    toast(err.message || 'Something went wrong. Try again.', 'error');
+  } finally {
+    setBtn('btnForgot', 'forgotText', false, 'Send Reset Link');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   LOGOUT
+══════════════════════════════════════════════════ */
 function handleLogout() {
-  state = {
-    token: null, user: null, accountNumber: null,
-    accountName: null, balance: null, balanceHidden: false, transactions: []
-  };
+  state = { token: null, user: null, accountNumber: null, accountName: null, balance: null, balanceHidden: false, transactions: [] };
   showPage('loginPage');
   toast('You have been logged out.');
 }
@@ -850,19 +770,13 @@ function handleLogout() {
 function initApp() {
   const u        = state.user;
   const initials = `${u.firstName[0]}${u.lastName[0]}`.toUpperCase();
-
   document.getElementById('navAvatar').textContent   = initials;
   document.getElementById('navName').textContent     = u.firstName;
-  document.getElementById('welcomeName').textContent = state.accountName ||
-                                                       `${u.firstName} ${u.lastName}`;
+  document.getElementById('welcomeName').textContent = state.accountName || `${u.firstName} ${u.lastName}`;
   document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('en-NG', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
-
-  // Show "Create Account" banner if no bank account yet
-  document.getElementById('noAccountBanner').style.display =
-    state.accountNumber ? 'none' : 'block';
-
+  document.getElementById('noAccountBanner').style.display = state.accountNumber ? 'none' : 'block';
   updateBalanceUI();
   loadTransactions();
 }
@@ -871,27 +785,21 @@ function initApp() {
    BALANCE UI
 ══════════════════════════════════════════════════ */
 function updateBalanceUI() {
-  // Balance card
   document.getElementById('balanceDisplay').textContent =
-    state.balanceHidden ? '₦ ••• •••'
-    : state.balance !== null ? fmt(state.balance) : '₦ — — —';
-
+    state.balanceHidden ? '₦ ••• •••' : state.balance !== null ? fmt(state.balance) : '₦ — — —';
   document.getElementById('balanceAcct').textContent =
     state.accountNumber ? `Acc: ${state.accountNumber}` : 'No bank account yet';
-
-  // Balance panel
   document.getElementById('bpAvail').textContent    = state.balance !== null ? fmt(state.balance) : '—';
   document.getElementById('bpAcctNum').textContent  = state.accountNumber || '—';
   document.getElementById('bpAcctName').textContent = state.accountName   || '—';
 
-  // Monthly in / out (from cached transactions)
   const now = new Date();
   let mIn = 0, mOut = 0;
   state.transactions.forEach(tx => {
     const d = new Date(tx.createdAt);
     if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-      if (tx.to === state.accountNumber)   mIn  += Number(tx.amount);
-      else                                 mOut += Number(tx.amount);
+      if (tx.to === state.accountNumber) mIn  += Number(tx.amount);
+      else                               mOut += Number(tx.amount);
     }
   });
   document.getElementById('bpIn').textContent  = fmt(mIn);
@@ -910,10 +818,7 @@ function toggleBalance() {
    → { accountName, accountNumber, balance }
 ══════════════════════════════════════════════════ */
 async function refreshBalance() {
-  if (!state.accountNumber) {
-    toast('No bank account found. Create one first.', 'error');
-    return;
-  }
+  if (!state.accountNumber) { toast('No bank account found. Create one first.', 'error'); return; }
   try {
     const data        = await apiFetch(`/transaction/balance/${state.accountNumber}`);
     state.balance       = data.balance      ?? state.balance;
@@ -928,8 +833,8 @@ async function refreshBalance() {
 
 /* ══════════════════════════════════════════════════
    CREATE BANK ACCOUNT
-   POST /api/account/create  (auth required)
-   → { accountNumber, balance, ... }
+   POST /api/account/create
+   → { accountNumber, balance }
 ══════════════════════════════════════════════════ */
 async function createBankAccount() {
   setBtn('btnCreateAcct', 'createAcctText', true, '+ Create Bank Account');
@@ -949,60 +854,46 @@ async function createBankAccount() {
 
 /* ══════════════════════════════════════════════════
    TRANSACTION HISTORY
-   GET /api/transaction/history  (auth required)
+   GET /api/transaction/history
    → [ { from, to, amount, transactionId, status, createdAt } ]
 ══════════════════════════════════════════════════ */
 async function loadTransactions() {
-  if (!state.accountNumber) return; // no point if no account
+  if (!state.accountNumber) return;
   try {
-    const txs          = await apiFetch('/transaction/history');
-    state.transactions   = Array.isArray(txs) ? txs : [];
+    const txs        = await apiFetch('/transaction/history');
+    state.transactions = Array.isArray(txs) ? txs : [];
     renderTransactions();
     updateBalanceUI();
   } catch (err) {
     document.getElementById('txList').innerHTML =
-      `<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">
-        ${err.message || 'Could not load transactions'}
-       </div>`;
+      `<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">${err.message || 'Could not load transactions'}</div>`;
   }
 }
 
 function renderTransactions() {
   const list = document.getElementById('txList');
   const txs  = state.transactions;
-
   if (!txs.length) {
-    list.innerHTML =
-      '<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">No transactions yet.</div>';
+    list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">No transactions yet.</div>';
     return;
   }
-
   const myAcct = state.accountNumber;
   list.innerHTML = txs.slice(0, 30).map(tx => {
-    const isCredit   = tx.to === myAcct;
-    const icon       = isCredit ? '⬇' : '⬆';
-    const label      = isCredit ? `From: ${tx.from}` : `To: ${tx.to}`;
-    const date       = new Date(tx.createdAt).toLocaleDateString('en-NG',
-                       { day: 'numeric', month: 'short', year: 'numeric' });
-    const statusClr  = tx.status === 'success' ? '#2ecc71'
-                     : tx.status === 'pending'  ? '#f39c12' : '#e74c3c';
+    const isCredit  = tx.to === myAcct;
+    const icon      = isCredit ? '⬇' : '⬆';
+    const label     = isCredit ? `From: ${tx.from}` : `To: ${tx.to}`;
+    const date      = new Date(tx.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
+    const statusClr = tx.status === 'success' ? '#2ecc71' : tx.status === 'pending' ? '#f39c12' : '#e74c3c';
     return `
       <div class="tx-item">
         <div class="tx-left">
           <div class="tx-icon ${isCredit ? 'credit' : 'debit'}">${icon}</div>
           <div>
             <div class="tx-desc">${label}</div>
-            <div class="tx-meta">
-              ${date} &nbsp;·&nbsp;
-              <span style="color:${statusClr};font-size:11px;font-weight:700;">
-                ${tx.status || 'unknown'}
-              </span>
-            </div>
+            <div class="tx-meta">${date} &nbsp;·&nbsp;<span style="color:${statusClr};font-size:11px;font-weight:700;">${tx.status || 'unknown'}</span></div>
           </div>
         </div>
-        <div class="tx-amount ${isCredit ? 'credit' : 'debit'}">
-          ${isCredit ? '+' : '-'}${fmt(tx.amount)}
-        </div>
+        <div class="tx-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '-'}${fmt(tx.amount)}</div>
       </div>`;
   }).join('');
 }
@@ -1010,16 +901,14 @@ function renderTransactions() {
 /* ══════════════════════════════════════════════════
    NAME ENQUIRY
    GET /api/transaction/name-enquiry/:accountNumber
-   → { accountName, accountNumber, ... }
+   → { accountName, accountNumber }
 ══════════════════════════════════════════════════ */
 async function lookupAccountName(accountNumber) {
   const hint      = document.getElementById('nameEnquiryResult');
   const nameField = document.getElementById('tfRecipient');
-
   hint.style.color = 'var(--text-muted)';
   hint.textContent = 'Looking up account...';
   nameField.value  = '';
-
   try {
     const data = await apiFetch(`/transaction/name-enquiry/${accountNumber}`);
     const name = data.accountName || data.name || data.fullName || '';
@@ -1040,35 +929,30 @@ async function lookupAccountName(accountNumber) {
 
 /* ══════════════════════════════════════════════════
    TRANSFER
-   POST /api/transaction/transfer  { from, to, amount }
+   POST /api/transaction/transfer { from, to, amount }
    → { message, transaction, newBalance }
 ══════════════════════════════════════════════════ */
 let pendingTransfer = null;
 
 function initiateTransfer() {
-  if (!state.accountNumber) {
-    toast('You need a bank account to transfer funds', 'error'); return;
-  }
+  if (!state.accountNumber) { toast('You need a bank account to transfer funds', 'error'); return; }
 
   const toAcct    = document.getElementById('tfAcctNum').value.trim();
   const recipient = document.getElementById('tfRecipient').value.trim();
   const amount    = document.getElementById('tfAmount').value;
   const narration = document.getElementById('tfNarration').value.trim();
 
-  if (!toAcct || toAcct.length !== 10)  { toast('Enter a valid 10-digit account number', 'error'); return; }
-  if (!recipient)                        { toast('Please wait for account name lookup', 'error'); return; }
-  if (!amount || Number(amount) < 1)     { toast('Enter a valid amount', 'error'); return; }
-  if (toAcct === state.accountNumber)    { toast("You can't transfer to yourself", 'error'); return; }
-  if (state.balance !== null && Number(amount) > state.balance) {
-    toast('Insufficient balance', 'error'); return;
-  }
+  if (!toAcct || toAcct.length !== 10) { toast('Enter a valid 10-digit account number', 'error'); return; }
+  if (!recipient)                       { toast('Please wait for account name lookup', 'error'); return; }
+  if (!amount || Number(amount) < 1)    { toast('Enter a valid amount', 'error'); return; }
+  if (toAcct === state.accountNumber)   { toast("You can't transfer to yourself", 'error'); return; }
+  if (state.balance !== null && Number(amount) > state.balance) { toast('Insufficient balance', 'error'); return; }
 
   pendingTransfer = { toAcct, recipient, amount, narration };
-
-  document.getElementById('m-to').textContent       = toAcct;
-  document.getElementById('m-name').textContent     = recipient;
+  document.getElementById('m-to').textContent        = toAcct;
+  document.getElementById('m-name').textContent      = recipient;
   document.getElementById('m-narration').textContent = narration || '—';
-  document.getElementById('m-amount').textContent   = fmt(amount);
+  document.getElementById('m-amount').textContent    = fmt(amount);
   document.getElementById('confirmModal').classList.add('show');
 }
 
@@ -1077,36 +961,20 @@ async function executeTransfer() {
   const btn = document.getElementById('btnConfirmTransfer');
   btn.disabled  = true;
   btn.innerHTML = '<span class="spinner"></span>&nbsp; Processing...';
-
   try {
     const data = await apiFetch('/transaction/transfer', {
       method: 'POST',
-      body: JSON.stringify({
-        from:   state.accountNumber,
-        to:     pendingTransfer.toAcct,
-        amount: Number(pendingTransfer.amount)
-      })
+      body: JSON.stringify({ from: state.accountNumber, to: pendingTransfer.toAcct, amount: Number(pendingTransfer.amount) })
     });
-
-    if (data.newBalance !== undefined) {
-      state.balance = data.newBalance;
-      updateBalanceUI();
-    } else {
-      await refreshBalance();
-    }
-
+    if (data.newBalance !== undefined) { state.balance = data.newBalance; updateBalanceUI(); }
+    else { await refreshBalance(); }
     await loadTransactions();
     closeModal();
     closePanel('transferPanel');
-
-    ['tfAcctNum','tfRecipient','tfAmount','tfNarration'].forEach(id =>
-      document.getElementById(id).value = ''
-    );
+    ['tfAcctNum','tfRecipient','tfAmount','tfNarration'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('nameEnquiryResult').textContent = '';
-
     toast(`₦${Number(pendingTransfer.amount).toLocaleString()} sent to ${pendingTransfer.recipient} successfully!`, 'success');
     pendingTransfer = null;
-
   } catch (err) {
     toast(err.message || 'Transfer failed', 'error');
   } finally {
@@ -1121,9 +989,9 @@ function closeModal() {
 }
 
 /* ══════════════════════════════════════════════════
-   IDENTITY VERIFICATION
-   BVN — compared against state.user.bvn (stored on login)
-   NIN — informational (no dedicated route in your API)
+   VERIFY BVN
+   POST /api/auth/verify-bvn { bvn, dob }
+   → { message, user: { firstName, lastName, isVerified } }
 ══════════════════════════════════════════════════ */
 function switchIdTab(tab, btn) {
   document.querySelectorAll('.id-tab').forEach(t => t.classList.remove('active'));
@@ -1133,7 +1001,7 @@ function switchIdTab(tab, btn) {
   document.getElementById('verifyResult').innerHTML = '';
 }
 
-function verifyBvn() {
+async function verifyBvn() {
   const bvn = document.getElementById('bvnInput').value.trim();
   const dob = document.getElementById('bvnDob').value;
   const el  = document.getElementById('verifyResult');
@@ -1141,23 +1009,43 @@ function verifyBvn() {
   if (!bvn || bvn.length !== 11) { toast('Enter a valid 11-digit BVN', 'error'); return; }
   if (!dob)                       { toast('Please enter your date of birth', 'error'); return; }
 
-  if (state.user && bvn === state.user.bvn) {
+  if (state.user?.isVerified) {
     el.innerHTML = `
       <div class="verify-result">
         <div class="v-icon">✅</div>
-        <div class="v-title">BVN Verified</div>
-        <div class="v-sub">
-          BVN matches your registered account.<br>
-          Name: <strong>${state.accountName || state.user.firstName + ' ' + state.user.lastName}</strong>
-        </div>
+        <div class="v-title">Already Verified</div>
+        <div class="v-sub">Your BVN is already verified.<br>Name: <strong>${state.accountName || state.user.firstName + ' ' + state.user.lastName}</strong></div>
       </div>`;
-    toast('BVN verified!', 'success');
-  } else {
+    return;
+  }
+
+  el.innerHTML = '<div style="text-align:center;padding:20px;"><span class="spinner"></span>&nbsp; Verifying with NIBSS...</div>';
+
+  try {
+    const data = await apiFetch('/auth/verify-bvn', {
+      method: 'POST',
+      body:   JSON.stringify({ bvn, dob })
+    });
+    state.user.isVerified = true;
+    state.user.firstName  = data.user.firstName;
+    state.user.lastName   = data.user.lastName;
+    state.accountName     = `${data.user.firstName} ${data.user.lastName}`;
+    document.getElementById('welcomeName').textContent = state.accountName;
+    document.getElementById('navName').textContent     = data.user.firstName;
+    document.getElementById('navAvatar').textContent   = `${data.user.firstName[0]}${data.user.lastName[0]}`.toUpperCase();
+    el.innerHTML = `
+      <div class="verify-result">
+        <div class="v-icon">✅</div>
+        <div class="v-title">BVN Verified!</div>
+        <div class="v-sub">Welcome <strong>${data.user.firstName} ${data.user.lastName}</strong>! Your account is now fully verified.</div>
+      </div>`;
+    toast('BVN verified successfully!', 'success');
+  } catch (err) {
     el.innerHTML = `
       <div class="verify-result error">
         <div class="v-icon">❌</div>
-        <div class="v-title">BVN Mismatch</div>
-        <div class="v-sub">The BVN entered does not match the one on your account.</div>
+        <div class="v-title">Verification Failed</div>
+        <div class="v-sub">${err.message}</div>
       </div>`;
   }
 }
@@ -1166,18 +1054,13 @@ function verifyNin() {
   const nin  = document.getElementById('ninInput').value.trim();
   const name = document.getElementById('ninName').value.trim();
   const el   = document.getElementById('verifyResult');
-
   if (!nin || nin.length !== 11) { toast('Enter a valid 11-digit NIN', 'error'); return; }
   if (!name)                     { toast('Enter your full name', 'error'); return; }
-
   el.innerHTML = `
     <div class="verify-result">
       <div class="v-icon">ℹ️</div>
       <div class="v-title">NIN Submitted</div>
-      <div class="v-sub">
-        NIN <strong>${nin}</strong> recorded for <strong>${name}</strong>.<br>
-        NIN verification requires a dedicated NIN endpoint. Contact your admin to enable it.
-      </div>
+      <div class="v-sub">NIN <strong>${nin}</strong> recorded for <strong>${name}</strong>.<br>NIN verification requires a dedicated NIN endpoint.</div>
     </div>`;
 }
 
