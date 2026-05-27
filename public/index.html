@@ -7,323 +7,232 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --gold: #C8973A;
-    --gold-dark: #8A6420;
-    --navy: #0B1C3E;
-    --navy-mid: #162B5B;
-    --navy-light: #1E3A78;
-    --white: #FFFFFF;
-    --text-muted: #7A8090;
-    --border: rgba(200,151,58,0.2);
-    --danger: #C0392B;
-    --success: #1A7A4A;
+    --gold: #C8973A; --gold-dark: #8A6420;
+    --navy: #0B1C3E; --navy-mid: #162B5B; --navy-light: #1E3A78;
+    --white: #FFFFFF; --text-muted: #7A8090;
+    --border: rgba(200,151,58,0.2); --danger: #C0392B; --success: #1A7A4A;
     --radius: 14px;
   }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--navy);
-    min-height: 100vh;
-    color: var(--white);
-    overflow-x: hidden;
-  }
-
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); min-height: 100vh; color: var(--white); overflow-x: hidden; }
   .page { display: none; min-height: 100vh; }
   .page.active { display: flex; }
 
+  /* TOAST */
   #toast {
     position: fixed; top: 20px; right: 20px; z-index: 9999;
     padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
     background: var(--navy); border: 1px solid var(--gold); color: var(--gold);
     transform: translateY(-80px); opacity: 0; transition: all 0.35s ease;
-    max-width: 320px; pointer-events: none;
+    max-width: 340px; pointer-events: none;
   }
   #toast.show    { transform: translateY(0); opacity: 1; }
   #toast.error   { border-color: var(--danger); color: #e74c3c; }
   #toast.success { border-color: var(--success); color: #2ecc71; }
   #toast.info    { border-color: var(--gold); color: var(--gold); }
 
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff; border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: inline-block; vertical-align: middle;
-  }
+  /* SPINNER */
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
   @keyframes spin   { to { transform: rotate(360deg); } }
   @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ── AUTH PAGES ── */
+  /* AUTH PAGES */
   #loginPage, #registerPage, #forgotPage {
     background: linear-gradient(135deg, #0B1C3E 0%, #162B5B 50%, #0B1C3E 100%);
-    align-items: center; justify-content: center;
-    padding: 24px; position: relative;
+    align-items: center; justify-content: center; padding: 24px; position: relative;
   }
   #loginPage::before, #registerPage::before, #forgotPage::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
+    content:''; position:absolute; inset:0; pointer-events:none;
     background: radial-gradient(ellipse at 70% 20%, rgba(200,151,58,0.08) 0%, transparent 60%),
                 radial-gradient(ellipse at 20% 80%, rgba(200,151,58,0.05) 0%, transparent 50%);
   }
   .auth-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border); border-radius: 20px;
-    padding: 48px 40px; width: 100%; max-width: 440px;
-    backdrop-filter: blur(10px); position: relative; z-index: 1;
-    animation: fadeUp 0.6s ease both;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 20px;
+    padding: 44px 38px; width: 100%; max-width: 440px;
+    backdrop-filter: blur(10px); position: relative; z-index: 1; animation: fadeUp 0.6s ease both;
   }
-  .brand { text-align: center; margin-bottom: 32px; }
-  .brand-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px; font-weight: 700;
-    color: var(--gold); letter-spacing: 4px; display: block;
-  }
-  .brand-sub {
-    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--text-muted); margin-top: 4px; display: block;
-  }
-  .brand-line { width: 40px; height: 2px; background: var(--gold); margin: 10px auto 0; border-radius: 2px; }
+  .brand { text-align:center; margin-bottom:28px; }
+  .brand-logo { font-family:'Playfair Display',serif; font-size:34px; font-weight:700; color:var(--gold); letter-spacing:4px; display:block; }
+  .brand-sub  { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--text-muted); margin-top:4px; display:block; }
+  .brand-line { width:40px; height:2px; background:var(--gold); margin:10px auto 0; border-radius:2px; }
 
-  .form-group { margin-bottom: 16px; }
-  .form-group label {
-    display: block; font-size: 11px; font-weight: 600;
-    letter-spacing: 1.2px; text-transform: uppercase;
-    color: var(--text-muted); margin-bottom: 7px;
-  }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display:block; font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
   .form-group input {
-    width: 100%; padding: 13px 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(200,151,58,0.25);
-    border-radius: 10px; color: var(--white);
-    font-family: 'DM Sans', sans-serif; font-size: 15px;
-    transition: border-color 0.2s, background 0.2s; outline: none;
+    width:100%; padding:12px 16px;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(200,151,58,0.25);
+    border-radius:10px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:15px;
+    transition:border-color 0.2s,background 0.2s; outline:none;
   }
-  .form-group input::placeholder { color: rgba(255,255,255,0.25); }
-  .form-group input:focus { border-color: var(--gold); background: rgba(200,151,58,0.07); }
+  .form-group input::placeholder { color:rgba(255,255,255,0.25); }
+  .form-group input:focus { border-color:var(--gold); background:rgba(200,151,58,0.07); }
 
-  .hint {
-    font-size: 12px; color: var(--text-muted);
-    margin-bottom: 20px; line-height: 1.6; text-align: center;
-  }
+  .hint { font-size:12px; color:var(--text-muted); margin-bottom:18px; line-height:1.6; text-align:center; }
   .btn-primary {
-    width: 100%; padding: 14px;
-    background: var(--gold); color: var(--navy);
-    border: none; border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px; font-weight: 700; cursor: pointer;
-    transition: all 0.2s; margin-top: 6px;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width:100%; padding:13px; background:var(--gold); color:var(--navy);
+    border:none; border-radius:10px; font-family:'DM Sans',sans-serif;
+    font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; margin-top:6px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
   }
-  .btn-primary:hover    { background: #d4a440; transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+  .btn-primary:hover    { background:#d4a440; transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+  .auth-footer { text-align:center; margin-top:14px; font-size:13px; color:var(--text-muted); }
+  .auth-footer a { color:var(--gold); text-decoration:none; font-weight:600; }
+  .auth-footer a:hover { text-decoration:underline; }
 
-  .auth-footer {
-    text-align: center; margin-top: 14px;
-    font-size: 13px; color: var(--text-muted);
-  }
-  .auth-footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
-  .auth-footer a:hover { text-decoration: underline; }
-
-  /* ── APP SHELL ── */
-  #appPage { flex-direction: column; background: #0D1520; min-height: 100vh; }
-
+  /* APP SHELL */
+  #appPage { flex-direction:column; background:#0D1520; min-height:100vh; }
   .topnav {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 24px;
-    background: rgba(11,28,62,0.96);
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-    backdrop-filter: blur(12px);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; background:rgba(11,28,62,0.96);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; backdrop-filter:blur(12px);
   }
-  .topnav-brand { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 3px; }
-  .topnav-right { display: flex; align-items: center; gap: 12px; }
-  .avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--gold); color: var(--navy);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; flex-shrink: 0;
-  }
-  .topnav-name { font-size: 14px; font-weight: 500; }
-  .btn-logout {
-    background: none; border: 1px solid rgba(200,151,58,0.3);
-    color: var(--text-muted); padding: 6px 14px; border-radius: 8px;
-    font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
-  }
-  .btn-logout:hover { border-color: var(--danger); color: #e74c3c; }
+  .topnav-brand { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--gold); letter-spacing:3px; }
+  .topnav-right { display:flex; align-items:center; gap:12px; }
+  .avatar { width:36px; height:36px; border-radius:50%; background:var(--gold); color:var(--navy); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+  .topnav-name { font-size:14px; font-weight:500; }
+  .btn-logout { background:none; border:1px solid rgba(200,151,58,0.3); color:var(--text-muted); padding:6px 14px; border-radius:8px; font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+  .btn-logout:hover { border-color:var(--danger); color:#e74c3c; }
 
-  .app-body { flex: 1; padding: 24px 20px; max-width: 800px; margin: 0 auto; width: 100%; }
+  .app-body { flex:1; padding:24px 20px; max-width:800px; margin:0 auto; width:100%; }
 
   .welcome-banner {
-    background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
-    border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 26px 28px; margin-bottom: 18px;
-    position: relative; overflow: hidden; animation: fadeUp 0.4s ease both;
+    background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));
+    border:1px solid var(--border); border-radius:var(--radius); padding:26px 28px;
+    margin-bottom:18px; position:relative; overflow:hidden; animation:fadeUp 0.4s ease both;
   }
-  .welcome-banner::after {
-    content: 'RIABANK'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
-    font-family: 'Playfair Display', serif; font-size: 76px;
-    color: rgba(200,151,58,0.05); letter-spacing: 4px; pointer-events: none; font-weight: 700;
-  }
-  .welcome-greeting { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
-  .welcome-name     { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 3px; }
-  .welcome-date     { font-size: 12px; color: var(--text-muted); }
+  .welcome-banner::after { content:'RIABANK'; position:absolute; right:-8px; top:50%; transform:translateY(-50%); font-family:'Playfair Display',serif; font-size:76px; color:rgba(200,151,58,0.05); letter-spacing:4px; pointer-events:none; font-weight:700; }
+  .welcome-greeting { font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:4px; }
+  .welcome-name     { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; margin-bottom:3px; }
+  .welcome-date     { font-size:12px; color:var(--text-muted); }
 
-  .no-account-banner {
-    display: none;
-    background: rgba(200,151,58,0.07); border: 1px dashed rgba(200,151,58,0.5);
-    border-radius: var(--radius); padding: 20px 24px; margin-bottom: 18px; text-align: center;
+  /* STATUS BANNERS */
+  .status-banner {
+    display:none; border-radius:var(--radius); padding:20px 24px;
+    margin-bottom:18px; text-align:center;
   }
-  .no-account-banner p { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+  .status-banner p  { font-size:14px; margin-bottom:14px; line-height:1.6; }
+  .status-banner.unverified { background:rgba(192,57,43,0.08); border:1px dashed rgba(192,57,43,0.4); }
+  .status-banner.unverified p { color:#e67e73; }
+  .status-banner.pending    { background:rgba(243,156,18,0.08); border:1px dashed rgba(243,156,18,0.4); }
+  .status-banner.pending p  { color:#f39c12; }
+  .status-banner.no-account { background:rgba(200,151,58,0.07); border:1px dashed rgba(200,151,58,0.5); }
+  .status-banner.no-account p { color:var(--text-muted); }
 
+  /* BALANCE CARD */
   .balance-card {
-    background: linear-gradient(135deg, #C8973A 0%, #8A6420 100%);
-    border-radius: var(--radius); padding: 26px 28px;
-    margin-bottom: 18px; position: relative; overflow: hidden; animation: fadeUp 0.5s ease both;
+    background:linear-gradient(135deg,#C8973A 0%,#8A6420 100%);
+    border-radius:var(--radius); padding:26px 28px; margin-bottom:18px;
+    position:relative; overflow:hidden; animation:fadeUp 0.5s ease both;
   }
-  .balance-card::before {
-    content: ''; position: absolute; top: -40px; right: -40px;
-    width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.08);
+  .balance-card::before { content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.08); }
+  .balance-card::after  { content:''; position:absolute; bottom:-20px; left:30px; width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.05); }
+  .balance-label  { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(11,28,62,0.65); font-weight:700; margin-bottom:6px; }
+  .balance-amount { font-family:'Playfair Display',serif; font-size:40px; font-weight:700; color:var(--navy); margin-bottom:4px; position:relative; z-index:1; }
+  .balance-acct   { font-size:13px; color:rgba(11,28,62,0.55); font-weight:500; position:relative; z-index:1; }
+  .balance-refresh { position:absolute; top:18px; right:18px; z-index:2; background:rgba(11,28,62,0.15); border:none; color:var(--navy); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:16px; transition:transform 0.35s; display:flex; align-items:center; justify-content:center; }
+  .balance-refresh:hover { transform:rotate(180deg); }
+  .balance-eye { position:absolute; bottom:18px; right:18px; z-index:2; background:rgba(11,28,62,0.15); border:none; color:var(--navy); padding:5px 12px; border-radius:20px; cursor:pointer; font-size:12px; font-family:'DM Sans',sans-serif; font-weight:700; }
+  .balance-eye:hover { background:rgba(11,28,62,0.25); }
+
+  /* QUICK ACTIONS */
+  .section-title { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); font-weight:600; margin-bottom:12px; }
+  .quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:22px; animation:fadeUp 0.55s ease both; }
+  .action-btn { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:var(--radius); padding:16px 10px; text-align:center; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .action-btn:hover { background:rgba(200,151,58,0.1); border-color:var(--gold); transform:translateY(-2px); }
+  .action-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .action-icon.transfer { background:rgba(200,151,58,0.15); }
+  .action-icon.balance  { background:rgba(30,58,120,0.4); }
+  .action-icon.history  { background:rgba(26,122,74,0.2); }
+  .action-icon.identity { background:rgba(192,57,43,0.15); }
+  .action-label { font-size:11px; font-weight:600; color:var(--text-muted); }
+
+  /* PANELS */
+  .panel { display:none; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:var(--radius); padding:26px; margin-bottom:20px; animation:fadeUp 0.35s ease both; }
+  .panel.active { display:block; }
+  .panel-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+  .panel-title  { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; }
+  .btn-close-panel { background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1; transition:color 0.2s; }
+  .btn-close-panel:hover { color:var(--white); }
+
+  .panel .form-group label { color:rgba(255,255,255,0.45); }
+  .panel .form-group input, .panel .form-group select, .panel .form-group textarea {
+    width:100%; padding:13px 16px; background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:var(--white);
+    font-family:'DM Sans',sans-serif; font-size:15px; outline:none; transition:border-color 0.2s;
   }
-  .balance-card::after {
-    content: ''; position: absolute; bottom: -20px; left: 30px;
-    width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05);
-  }
-  .balance-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(11,28,62,0.65); font-weight: 700; margin-bottom: 6px; }
-  .balance-amount { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 700; color: var(--navy); margin-bottom: 4px; position: relative; z-index: 1; }
-  .balance-acct { font-size: 13px; color: rgba(11,28,62,0.55); font-weight: 500; position: relative; z-index: 1; }
-  .balance-refresh {
-    position: absolute; top: 18px; right: 18px; z-index: 2;
-    background: rgba(11,28,62,0.15); border: none; color: var(--navy);
-    width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-    font-size: 16px; transition: transform 0.35s; display: flex; align-items: center; justify-content: center;
-  }
-  .balance-refresh:hover { transform: rotate(180deg); }
-  .balance-eye {
-    position: absolute; bottom: 18px; right: 18px; z-index: 2;
-    background: rgba(11,28,62,0.15); border: none; color: var(--navy);
-    padding: 5px 12px; border-radius: 20px; cursor: pointer;
-    font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700;
-  }
-  .balance-eye:hover { background: rgba(11,28,62,0.25); }
+  .panel .form-group input::placeholder, .panel .form-group textarea::placeholder { color:rgba(255,255,255,0.22); }
+  .panel .form-group input:focus, .panel .form-group select:focus, .panel .form-group textarea:focus { border-color:var(--gold); }
+  .panel .form-group select option { background:var(--navy); }
+  .panel .form-group input[readonly] { opacity:0.65; cursor:default; }
+  .name-hint { margin-top:6px; font-size:13px; min-height:18px; font-weight:500; }
 
-  .section-title { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 12px; }
-  .quick-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 22px; animation: fadeUp 0.55s ease both; }
-  .action-btn {
-    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 10px; text-align: center;
-    cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;
-  }
-  .action-btn:hover { background: rgba(200,151,58,0.1); border-color: var(--gold); transform: translateY(-2px); }
-  .action-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  .action-icon.transfer { background: rgba(200,151,58,0.15); }
-  .action-icon.balance  { background: rgba(30,58,120,0.4); }
-  .action-icon.history  { background: rgba(26,122,74,0.2); }
-  .action-icon.identity { background: rgba(192,57,43,0.15); }
-  .action-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+  .btn-gold { background:var(--gold); color:var(--navy); border:none; border-radius:10px; padding:13px 26px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; }
+  .btn-gold:hover    { background:#d4a440; transform:translateY(-1px); }
+  .btn-gold:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-  .panel {
-    display: none; background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 26px; margin-bottom: 20px; animation: fadeUp 0.35s ease both;
-  }
-  .panel.active { display: block; }
-  .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-  .panel-title  { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
-  .btn-close-panel { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; line-height: 1; transition: color 0.2s; }
-  .btn-close-panel:hover { color: var(--white); }
+  .stat-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+  .stat-card { flex:1; min-width:130px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .stat-label { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
+  .stat-value { font-size:18px; font-weight:700; }
+  .stat-value.green { color:#2ecc71; }
+  .stat-value.red   { color:#e74c3c; }
 
-  .panel .form-group label { color: rgba(255,255,255,0.45); }
-  .panel .form-group input,
-  .panel .form-group select,
-  .panel .form-group textarea {
-    width: 100%; padding: 13px 16px;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px; color: var(--white);
-    font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s;
-  }
-  .panel .form-group input::placeholder,
-  .panel .form-group textarea::placeholder { color: rgba(255,255,255,0.22); }
-  .panel .form-group input:focus,
-  .panel .form-group select:focus,
-  .panel .form-group textarea:focus { border-color: var(--gold); }
-  .panel .form-group select option { background: var(--navy); }
-  .panel .form-group textarea { resize: vertical; min-height: 76px; }
-  .panel .form-group input[readonly] { opacity: 0.65; cursor: default; }
+  .acct-box { background:rgba(200,151,58,0.07); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:18px; }
+  .acct-box-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .acct-box-num   { font-size:20px; font-weight:700; letter-spacing:2px; margin-bottom:12px; }
+  .acct-box-name  { font-size:15px; font-weight:600; margin-bottom:4px; }
+  .acct-box-type  { font-size:12px; color:var(--text-muted); }
 
-  .name-hint { margin-top: 6px; font-size: 13px; min-height: 18px; font-weight: 500; }
+  .tx-list { display:flex; flex-direction:column; }
+  .tx-item { display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+  .tx-item:last-child { border-bottom:none; }
+  .tx-left  { display:flex; align-items:center; gap:12px; }
+  .tx-icon  { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .tx-icon.credit { background:rgba(26,122,74,0.2); }
+  .tx-icon.debit  { background:rgba(192,57,43,0.15); }
+  .tx-desc   { font-size:14px; font-weight:500; }
+  .tx-meta   { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .tx-amount { font-size:15px; font-weight:700; }
+  .tx-amount.credit { color:#2ecc71; }
+  .tx-amount.debit  { color:#e74c3c; }
 
-  .btn-gold {
-    background: var(--gold); color: var(--navy); border: none; border-radius: 10px; padding: 13px 26px;
-    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-gold:hover    { background: #d4a440; transform: translateY(-1px); }
-  .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .id-tabs { display:flex; gap:8px; margin-bottom:20px; }
+  .id-tab { padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:none; color:var(--text-muted); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .id-tab.active { background:var(--gold); color:var(--navy); border-color:var(--gold); }
+  .id-tab-content { display:none; }
+  .id-tab-content.active { display:block; }
 
-  .stat-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
-  .stat-card { flex: 1; min-width: 130px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
-  .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-  .stat-value { font-size: 18px; font-weight: 700; }
-  .stat-value.green { color: #2ecc71; }
-  .stat-value.red   { color: #e74c3c; }
+  .verify-result { border-radius:10px; padding:16px; margin-top:16px; background:rgba(26,122,74,0.1); border:1px solid rgba(26,122,74,0.3); }
+  .verify-result.error { background:rgba(192,57,43,0.1); border-color:rgba(192,57,43,0.3); }
+  .verify-result .v-icon  { font-size:24px; margin-bottom:8px; }
+  .verify-result .v-title { font-weight:700; font-size:15px; margin-bottom:4px; }
+  .verify-result .v-sub   { font-size:13px; color:var(--text-muted); line-height:1.6; }
 
-  .acct-box { background: rgba(200,151,58,0.07); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 18px; }
-  .acct-box-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .acct-box-num   { font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
-  .acct-box-name  { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .acct-box-type  { font-size: 12px; color: var(--text-muted); }
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:200; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px); }
+  .modal-overlay.show { display:flex; }
+  .modal-box { background:#0D1D3A; border:1px solid var(--border); border-radius:20px; padding:32px; width:100%; max-width:380px; animation:fadeUp 0.3s ease; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:20px; text-align:center; }
+  .modal-rows  { display:flex; flex-direction:column; margin-bottom:24px; }
+  .modal-row   { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+  .modal-row:last-child { border-bottom:none; }
+  .modal-row-label { font-size:13px; color:var(--text-muted); }
+  .modal-row-value { font-size:14px; font-weight:700; }
+  .modal-row-value.gold { color:var(--gold); }
+  .modal-actions { display:flex; gap:12px; }
+  .btn-cancel { flex:1; padding:13px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:15px; cursor:pointer; transition:background 0.2s; }
+  .btn-cancel:hover { background:rgba(255,255,255,0.12); }
 
-  .tx-list { display: flex; flex-direction: column; }
-  .tx-item { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .tx-item:last-child { border-bottom: none; }
-  .tx-left  { display: flex; align-items: center; gap: 12px; }
-  .tx-icon  { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-  .tx-icon.credit { background: rgba(26,122,74,0.2); }
-  .tx-icon.debit  { background: rgba(192,57,43,0.15); }
-  .tx-desc   { font-size: 14px; font-weight: 500; }
-  .tx-meta   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .tx-amount { font-size: 15px; font-weight: 700; }
-  .tx-amount.credit { color: #2ecc71; }
-  .tx-amount.debit  { color: #e74c3c; }
-
-  .id-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-  .id-tab { padding: 8px 20px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .id-tab.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
-  .id-tab-content { display: none; }
-  .id-tab-content.active { display: block; }
-
-  .verify-result { border-radius: 10px; padding: 16px; margin-top: 16px; background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.3); }
-  .verify-result.error { background: rgba(192,57,43,0.1); border-color: rgba(192,57,43,0.3); }
-  .verify-result .v-icon  { font-size: 24px; margin-bottom: 8px; }
-  .verify-result .v-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  .verify-result .v-sub   { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-  .modal-overlay.show { display: flex; }
-  .modal-box { background: #0D1D3A; border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 380px; animation: fadeUp 0.3s ease; }
-  .modal-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 20px; text-align: center; }
-  .modal-rows  { display: flex; flex-direction: column; margin-bottom: 24px; }
-  .modal-row   { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .modal-row:last-child { border-bottom: none; }
-  .modal-row-label { font-size: 13px; color: var(--text-muted); }
-  .modal-row-value { font-size: 14px; font-weight: 700; }
-  .modal-row-value.gold { color: var(--gold); }
-  .modal-actions { display: flex; gap: 12px; }
-  .btn-cancel { flex: 1; padding: 13px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer; transition: background 0.2s; }
-  .btn-cancel:hover { background: rgba(255,255,255,0.12); }
-
-  @media (max-width: 480px) {
-    .auth-card      { padding: 32px 22px; }
-    .quick-actions  { grid-template-columns: repeat(2,1fr); }
-    .balance-amount { font-size: 30px; }
-    .topnav-name    { display: none; }
+  @media (max-width:480px) {
+    .auth-card { padding:28px 18px; }
+    .quick-actions { grid-template-columns:repeat(2,1fr); }
+    .balance-amount { font-size:30px; }
+    .topnav-name { display:none; }
   }
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <!-- CONFIRM MODAL -->
@@ -343,7 +252,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════ LOGIN PAGE ══════════════════════ -->
+<!-- ══════════ LOGIN PAGE ══════════ -->
 <div class="page active" id="loginPage">
   <div class="auth-card">
     <div class="brand">
@@ -362,18 +271,12 @@
     <button class="btn-primary" id="btnLogin" onclick="handleLogin()">
       <span id="loginText">Sign In</span>
     </button>
-    <!-- ✅ FORGOT PASSWORD LINK -->
-    <p class="auth-footer">
-      <a href="#" onclick="showPage('forgotPage')">Forgot your password?</a>
-    </p>
-    <p class="auth-footer">
-      Don't have an account yet?
-      <a href="#" onclick="showPage('registerPage')">Register here</a>
-    </p>
+    <p class="auth-footer"><a href="#" onclick="showPage('forgotPage')">Forgot your password?</a></p>
+    <p class="auth-footer">Don't have an account? <a href="#" onclick="showPage('registerPage')">Register here</a></p>
   </div>
 </div>
 
-<!-- ══════════════════════ REGISTER PAGE ══════════════════════ -->
+<!-- ══════════ REGISTER PAGE ══════════ -->
 <div class="page" id="registerPage">
   <div class="auth-card">
     <div class="brand">
@@ -381,7 +284,7 @@
       <span class="brand-sub">Create Account</span>
       <div class="brand-line"></div>
     </div>
-    <p class="hint">Your name is pulled automatically from your BVN — no need to type it manually.</p>
+    <p class="hint">Register with your email, BVN, and date of birth. Your name is pulled from your BVN record.</p>
     <div class="form-group">
       <label>Email Address</label>
       <input type="email" id="regEmail" placeholder="your@email.com" />
@@ -389,6 +292,10 @@
     <div class="form-group">
       <label>BVN (Bank Verification Number)</label>
       <input type="text" id="regBvn" placeholder="11-digit BVN" maxlength="11" inputmode="numeric" />
+    </div>
+    <div class="form-group">
+      <label>Date of Birth</label>
+      <input type="date" id="regDob" />
     </div>
     <div class="form-group">
       <label>Password</label>
@@ -401,14 +308,11 @@
     <button class="btn-primary" id="btnRegister" onclick="handleRegister()">
       <span id="regText">Create Account</span>
     </button>
-    <p class="auth-footer">
-      Already have an account?
-      <a href="#" onclick="showPage('loginPage')">Sign in here</a>
-    </p>
+    <p class="auth-footer">Already have an account? <a href="#" onclick="showPage('loginPage')">Sign in here</a></p>
   </div>
 </div>
 
-<!-- ══════════════════════ FORGOT PASSWORD PAGE ══════════════════════ -->
+<!-- ══════════ FORGOT PASSWORD PAGE ══════════ -->
 <div class="page" id="forgotPage">
   <div class="auth-card">
     <div class="brand">
@@ -416,11 +320,7 @@
       <span class="brand-sub">Reset Password</span>
       <div class="brand-line"></div>
     </div>
-    <p class="hint">
-      Enter your registered email address and we'll send you a secure link
-      to reset your password. The link expires in
-      <strong style="color:var(--gold);">15 minutes</strong>.
-    </p>
+    <p class="hint">Enter your email and we'll send a secure reset link. Expires in <strong style="color:var(--gold);">15 minutes</strong>.</p>
     <div class="form-group">
       <label>Email Address</label>
       <input type="email" id="forgotEmail" placeholder="your@email.com" />
@@ -428,16 +328,12 @@
     <button class="btn-primary" id="btnForgot" onclick="handleForgotPassword()">
       <span id="forgotText">Send Reset Link</span>
     </button>
-    <p class="auth-footer">
-      Remember your password?
-      <a href="#" onclick="showPage('loginPage')">Sign in here</a>
-    </p>
+    <p class="auth-footer">Remember your password? <a href="#" onclick="showPage('loginPage')">Sign in here</a></p>
   </div>
 </div>
 
-<!-- ══════════════════════ APP PAGE ══════════════════════ -->
+<!-- ══════════ APP PAGE ══════════ -->
 <div class="page" id="appPage" style="flex-direction:column;">
-
   <nav class="topnav">
     <span class="topnav-brand">RIABANK</span>
     <div class="topnav-right">
@@ -449,19 +345,35 @@
 
   <div class="app-body">
 
+    <!-- Welcome -->
     <div class="welcome-banner">
       <div class="welcome-greeting">Welcome back</div>
       <div class="welcome-name" id="welcomeName">—</div>
       <div class="welcome-date" id="welcomeDate"></div>
     </div>
 
-    <div class="no-account-banner" id="noAccountBanner">
-      <p>You don't have a NIBSS bank account yet.<br>Create one to start transacting on RIABANK.</p>
+    <!-- BVN UNVERIFIED banner -->
+    <div class="status-banner unverified" id="bannerUnverified">
+      <p>⚠️ Your BVN is not yet verified. Please request validation to unlock full banking features.</p>
+      <button class="btn-gold" id="btnRequestBvn" onclick="requestBvnValidation()">
+        <span id="requestBvnText">📧 Request BVN Validation</span>
+      </button>
+    </div>
+
+    <!-- BVN PENDING banner -->
+    <div class="status-banner pending" id="bannerPending">
+      <p>⏳ Your BVN validation is pending review. You'll receive an email once approved.</p>
+    </div>
+
+    <!-- NO ACCOUNT banner (shown after BVN verified but no NIBSS account yet) -->
+    <div class="status-banner no-account" id="bannerNoAccount">
+      <p>✅ BVN Verified! You can now create your RIABANK bank account.</p>
       <button class="btn-gold" id="btnCreateAcct" onclick="createBankAccount()">
         <span id="createAcctText">+ Create Bank Account</span>
       </button>
     </div>
 
+    <!-- Balance Card -->
     <div class="balance-card">
       <button class="balance-refresh" onclick="refreshBalance()" title="Refresh">↻</button>
       <button class="balance-eye" id="balanceEye" onclick="toggleBalance()">Hide</button>
@@ -470,23 +382,20 @@
       <div class="balance-acct"   id="balanceAcct">—</div>
     </div>
 
+    <!-- Quick Actions -->
     <p class="section-title">What would you like to do?</p>
     <div class="quick-actions">
       <div class="action-btn" onclick="openPanel('transferPanel')">
-        <div class="action-icon transfer">💸</div>
-        <div class="action-label">Transfer</div>
+        <div class="action-icon transfer">💸</div><div class="action-label">Transfer</div>
       </div>
       <div class="action-btn" onclick="openPanel('balancePanel')">
-        <div class="action-icon balance">💰</div>
-        <div class="action-label">Balance</div>
+        <div class="action-icon balance">💰</div><div class="action-label">Balance</div>
       </div>
       <div class="action-btn" onclick="openPanel('historyPanel')">
-        <div class="action-icon history">📋</div>
-        <div class="action-label">History</div>
+        <div class="action-icon history">📋</div><div class="action-label">History</div>
       </div>
       <div class="action-btn" onclick="openPanel('identityPanel')">
-        <div class="action-icon identity">🛡</div>
-        <div class="action-label">Verify ID</div>
+        <div class="action-icon identity">🛡</div><div class="action-label">Verify ID</div>
       </div>
     </div>
 
@@ -498,8 +407,7 @@
       </div>
       <div class="form-group">
         <label>Recipient Account Number</label>
-        <input type="text" id="tfAcctNum" placeholder="10-digit account number"
-               maxlength="10" inputmode="numeric"
+        <input type="text" id="tfAcctNum" placeholder="10-digit account number" maxlength="10" inputmode="numeric"
                oninput="if(this.value.length===10) lookupAccountName(this.value)" />
         <div class="name-hint" id="nameEnquiryResult"></div>
       </div>
@@ -557,8 +465,7 @@
         <button class="btn-close-panel" onclick="closePanel('identityPanel')">✕</button>
       </div>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.7;">
-        Your identity is verified through your BVN during registration.
-        Use this panel to verify your BVN if your account is unverified.
+        Use this panel to verify your BVN directly via NIBSS or request admin validation.
       </p>
       <div class="id-tabs">
         <button class="id-tab active" onclick="switchIdTab('bvn',this)">BVN</button>
@@ -573,7 +480,7 @@
           <label>Date of Birth</label>
           <input type="date" id="bvnDob" />
         </div>
-        <button class="btn-gold" onclick="verifyBvn()">🛡 &nbsp;Verify BVN</button>
+        <button class="btn-gold" onclick="verifyBvn()">🛡 &nbsp;Verify BVN via NIBSS</button>
       </div>
       <div class="id-tab-content" id="tab-nin">
         <div class="form-group">
@@ -593,23 +500,23 @@
 </div>
 
 <script>
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    CONFIG
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 const API_BASE = 'https://riabank-api.onrender.com/api';
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    STATE
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 let state = {
   token: null, user: null,
   accountNumber: null, accountName: null,
   balance: null, balanceHidden: false, transactions: []
 };
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    UTILITIES
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -620,16 +527,17 @@ function toast(msg, type = 'info') {
   el.textContent = msg;
   el.className   = type + ' show';
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 3500);
+  el._t = setTimeout(() => el.classList.remove('show'), 4000);
 }
 
 function fmt(n) {
-  return '₦ ' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦ ' + Number(n).toLocaleString('en-NG', { minimumFractionDigits:2, maximumFractionDigits:2 });
 }
 
 function setBtn(btnId, spanId, loading, label) {
   const btn  = document.getElementById(btnId);
   const span = document.getElementById(spanId);
+  if (!btn || !span) return;
   btn.disabled   = loading;
   span.innerHTML = loading ? '<span class="spinner"></span>' : label;
 }
@@ -637,17 +545,16 @@ function setBtn(btnId, spanId, loading, label) {
 async function apiFetch(endpoint, opts = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
-  const res  = await fetch(API_BASE + endpoint, { ...opts, headers: { ...headers, ...(opts.headers || {}) } });
+  const res  = await fetch(API_BASE + endpoint, { ...opts, headers: { ...headers, ...(opts.headers||{}) } });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
   return data;
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    LOGIN
    POST /api/auth/login { email, password }
-   → { token, user: { id, email, firstName, lastName, bvn, isVerified } }
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPass').value;
@@ -662,6 +569,7 @@ async function handleLogin() {
     state.token = auth.token;
     state.user  = auth.user;
 
+    // Get account number from MongoDB
     try {
       const acct        = await apiFetch('/account/me');
       state.accountNumber = acct.accountNumber || null;
@@ -671,6 +579,7 @@ async function handleLogin() {
       state.accountName   = `${auth.user.firstName} ${auth.user.lastName}`;
     }
 
+    // Get live balance from NIBSS
     if (state.accountNumber) {
       try {
         const bal         = await apiFetch(`/transaction/balance/${state.accountNumber}`);
@@ -690,18 +599,18 @@ async function handleLogin() {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   REGISTER
-   POST /api/auth/register { email, bvn, password }
-   → { message, user: { firstName, isVerified } }
-══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   REGISTER  ✅ now includes dob
+   POST /api/auth/register { email, bvn, dob, password }
+════════════════════════════════════════ */
 async function handleRegister() {
   const email = document.getElementById('regEmail').value.trim();
   const bvn   = document.getElementById('regBvn').value.trim();
+  const dob   = document.getElementById('regDob').value;
   const pass  = document.getElementById('regPass').value;
   const pass2 = document.getElementById('regPass2').value;
 
-  if (!email || !bvn || !pass || !pass2) { toast('Please fill all fields', 'error'); return; }
+  if (!email || !bvn || !dob || !pass || !pass2) { toast('Please fill all fields including date of birth', 'error'); return; }
   if (bvn.length !== 11) { toast('BVN must be exactly 11 digits', 'error'); return; }
   if (pass !== pass2)    { toast('Passwords do not match', 'error'); return; }
   if (pass.length < 8)   { toast('Password must be at least 8 characters', 'error'); return; }
@@ -710,15 +619,14 @@ async function handleRegister() {
   try {
     const data = await apiFetch('/auth/register', {
       method: 'POST',
-      body:   JSON.stringify({ email, bvn, password: pass })
+      body:   JSON.stringify({ email, bvn, dob, password: pass })
     });
 
     if (data.user?.isVerified) {
       toast(`Welcome ${data.user.firstName}! Account created & BVN verified ✅ Please sign in.`, 'success');
     } else {
-      toast('Account created! BVN unverified — please verify your BVN after login.', 'info');
+      toast('Account created! Please log in and request BVN validation.', 'info');
     }
-
     setTimeout(() => showPage('loginPage'), 2500);
   } catch (err) {
     toast(err.message || 'Registration failed.', 'error');
@@ -727,12 +635,10 @@ async function handleRegister() {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   FORGOT PASSWORD ✅ NEW
+/* ════════════════════════════════════════
+   FORGOT PASSWORD
    POST /api/auth/forgot-password { email }
-   → { message }
-   Backend sends reset email with link to reset-password.html
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 async function handleForgotPassword() {
   const email = document.getElementById('forgotEmail').value.trim();
   if (!email) { toast('Please enter your email address', 'error'); return; }
@@ -743,10 +649,8 @@ async function handleForgotPassword() {
       method: 'POST',
       body:   JSON.stringify({ email })
     });
-    // Always show the same message regardless (security best practice)
     toast(data.message || 'If that email exists, a reset link has been sent.', 'success');
     document.getElementById('forgotEmail').value = '';
-    // Redirect back to login after 3 seconds
     setTimeout(() => showPage('loginPage'), 3000);
   } catch (err) {
     toast(err.message || 'Something went wrong. Try again.', 'error');
@@ -755,35 +659,107 @@ async function handleForgotPassword() {
   }
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    LOGOUT
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 function handleLogout() {
-  state = { token: null, user: null, accountNumber: null, accountName: null, balance: null, balanceHidden: false, transactions: [] };
+  state = { token:null, user:null, accountNumber:null, accountName:null, balance:null, balanceHidden:false, transactions:[] };
   showPage('loginPage');
   toast('You have been logged out.');
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    DASHBOARD INIT
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 function initApp() {
   const u        = state.user;
   const initials = `${u.firstName[0]}${u.lastName[0]}`.toUpperCase();
+
   document.getElementById('navAvatar').textContent   = initials;
   document.getElementById('navName').textContent     = u.firstName;
   document.getElementById('welcomeName').textContent = state.accountName || `${u.firstName} ${u.lastName}`;
   document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('en-NG', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
   });
-  document.getElementById('noAccountBanner').style.display = state.accountNumber ? 'none' : 'block';
+
+  updateStatusBanners();
   updateBalanceUI();
   loadTransactions();
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
+   STATUS BANNERS — shows correct banner
+   based on verification + account status
+════════════════════════════════════════ */
+function updateStatusBanners() {
+  const u      = state.user;
+  const status = u?.verificationStatus || 'none';
+
+  document.getElementById('bannerUnverified').style.display = 'none';
+  document.getElementById('bannerPending').style.display    = 'none';
+  document.getElementById('bannerNoAccount').style.display  = 'none';
+
+  if (!u?.isVerified && status === 'none') {
+    // Not verified, never requested
+    document.getElementById('bannerUnverified').style.display = 'block';
+  } else if (!u?.isVerified && status === 'pending') {
+    // Requested, waiting for admin
+    document.getElementById('bannerPending').style.display = 'block';
+  } else if (u?.isVerified && !state.accountNumber) {
+    // Verified but no NIBSS account yet
+    document.getElementById('bannerNoAccount').style.display = 'block';
+  }
+  // If verified + has account → no banner needed, dashboard is fully active
+}
+
+/* ════════════════════════════════════════
+   REQUEST BVN VALIDATION  ✅ NEW
+   POST /api/auth/request-bvn-validation
+   → sends email to admin
+════════════════════════════════════════ */
+async function requestBvnValidation() {
+  setBtn('btnRequestBvn', 'requestBvnText', true, 'Sending...');
+  try {
+    const data = await apiFetch('/auth/request-bvn-validation', { method: 'POST' });
+
+    // Update local state to pending
+    state.user.verificationStatus = 'pending';
+    updateStatusBanners();
+
+    toast(data.message || 'Validation request sent! Check your email for updates.', 'success');
+  } catch (err) {
+    toast(err.message || 'Could not send request. Try again.', 'error');
+  } finally {
+    setBtn('btnRequestBvn', 'requestBvnText', false, '📧 Request BVN Validation');
+  }
+}
+
+/* ════════════════════════════════════════
+   CREATE BANK ACCOUNT
+   POST /api/account/create
+════════════════════════════════════════ */
+async function createBankAccount() {
+  if (!state.user?.isVerified) {
+    toast('Please verify your BVN before creating a bank account.', 'error'); return;
+  }
+  setBtn('btnCreateAcct', 'createAcctText', true, '+ Create Bank Account');
+  try {
+    const data        = await apiFetch('/account/create', { method:'POST' });
+    state.accountNumber = data.accountNumber;
+    state.balance       = data.balance ?? 0;
+    document.getElementById('bannerNoAccount').style.display = 'none';
+    updateBalanceUI();
+    toast('Bank account created successfully! 🎉', 'success');
+  } catch (err) {
+    toast(err.message || 'Could not create account', 'error');
+  } finally {
+    setBtn('btnCreateAcct', 'createAcctText', false, '+ Create Bank Account');
+  }
+}
+
+/* ════════════════════════════════════════
    BALANCE UI
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 function updateBalanceUI() {
   document.getElementById('balanceDisplay').textContent =
     state.balanceHidden ? '₦ ••• •••' : state.balance !== null ? fmt(state.balance) : '₦ — — —';
@@ -812,13 +788,12 @@ function toggleBalance() {
   updateBalanceUI();
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    REFRESH BALANCE
    GET /api/transaction/balance/:accountNumber
-   → { accountName, accountNumber, balance }
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 async function refreshBalance() {
-  if (!state.accountNumber) { toast('No bank account found. Create one first.', 'error'); return; }
+  if (!state.accountNumber) { toast('No bank account found.', 'error'); return; }
   try {
     const data        = await apiFetch(`/transaction/balance/${state.accountNumber}`);
     state.balance       = data.balance      ?? state.balance;
@@ -831,32 +806,10 @@ async function refreshBalance() {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   CREATE BANK ACCOUNT
-   POST /api/account/create
-   → { accountNumber, balance }
-══════════════════════════════════════════════════ */
-async function createBankAccount() {
-  setBtn('btnCreateAcct', 'createAcctText', true, '+ Create Bank Account');
-  try {
-    const data        = await apiFetch('/account/create', { method: 'POST' });
-    state.accountNumber = data.accountNumber;
-    state.balance       = data.balance ?? 0;
-    document.getElementById('noAccountBanner').style.display = 'none';
-    updateBalanceUI();
-    toast('Bank account created successfully!', 'success');
-  } catch (err) {
-    toast(err.message || 'Could not create account', 'error');
-  } finally {
-    setBtn('btnCreateAcct', 'createAcctText', false, '+ Create Bank Account');
-  }
-}
-
-/* ══════════════════════════════════════════════════
-   TRANSACTION HISTORY
+/* ════════════════════════════════════════
+   TRANSACTIONS
    GET /api/transaction/history
-   → [ { from, to, amount, transactionId, status, createdAt } ]
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 async function loadTransactions() {
   if (!state.accountNumber) return;
   try {
@@ -866,7 +819,7 @@ async function loadTransactions() {
     updateBalanceUI();
   } catch (err) {
     document.getElementById('txList').innerHTML =
-      `<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">${err.message || 'Could not load transactions'}</div>`;
+      `<div style="text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;">${err.message||'Could not load transactions'}</div>`;
   }
 }
 
@@ -878,31 +831,28 @@ function renderTransactions() {
     return;
   }
   const myAcct = state.accountNumber;
-  list.innerHTML = txs.slice(0, 30).map(tx => {
+  list.innerHTML = txs.slice(0,30).map(tx => {
     const isCredit  = tx.to === myAcct;
-    const icon      = isCredit ? '⬇' : '⬆';
-    const label     = isCredit ? `From: ${tx.from}` : `To: ${tx.to}`;
-    const date      = new Date(tx.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
-    const statusClr = tx.status === 'success' ? '#2ecc71' : tx.status === 'pending' ? '#f39c12' : '#e74c3c';
+    const date      = new Date(tx.createdAt).toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' });
+    const statusClr = tx.status==='success'?'#2ecc71':tx.status==='pending'?'#f39c12':'#e74c3c';
     return `
       <div class="tx-item">
         <div class="tx-left">
-          <div class="tx-icon ${isCredit ? 'credit' : 'debit'}">${icon}</div>
+          <div class="tx-icon ${isCredit?'credit':'debit'}">${isCredit?'⬇':'⬆'}</div>
           <div>
-            <div class="tx-desc">${label}</div>
-            <div class="tx-meta">${date} &nbsp;·&nbsp;<span style="color:${statusClr};font-size:11px;font-weight:700;">${tx.status || 'unknown'}</span></div>
+            <div class="tx-desc">${isCredit?'From: '+tx.from:'To: '+tx.to}</div>
+            <div class="tx-meta">${date} &nbsp;·&nbsp;<span style="color:${statusClr};font-size:11px;font-weight:700;">${tx.status||'unknown'}</span></div>
           </div>
         </div>
-        <div class="tx-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '-'}${fmt(tx.amount)}</div>
+        <div class="tx-amount ${isCredit?'credit':'debit'}">${isCredit?'+':'-'}${fmt(tx.amount)}</div>
       </div>`;
   }).join('');
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    NAME ENQUIRY
    GET /api/transaction/name-enquiry/:accountNumber
-   → { accountName, accountNumber }
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 async function lookupAccountName(accountNumber) {
   const hint      = document.getElementById('nameEnquiryResult');
   const nameField = document.getElementById('tfRecipient');
@@ -912,41 +862,31 @@ async function lookupAccountName(accountNumber) {
   try {
     const data = await apiFetch(`/transaction/name-enquiry/${accountNumber}`);
     const name = data.accountName || data.name || data.fullName || '';
-    if (name) {
-      hint.style.color = '#2ecc71';
-      hint.textContent = `✓ ${name}`;
-      nameField.value  = name;
-    } else {
-      hint.style.color = 'var(--text-muted)';
-      hint.textContent = 'Account found';
-    }
+    if (name) { hint.style.color='#2ecc71'; hint.textContent=`✓ ${name}`; nameField.value=name; }
+    else      { hint.style.color='var(--text-muted)'; hint.textContent='Account found'; }
   } catch (_) {
-    hint.style.color = '#e74c3c';
-    hint.textContent = '✗ Account not found';
-    nameField.value  = '';
+    hint.style.color='#e74c3c'; hint.textContent='✗ Account not found'; nameField.value='';
   }
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    TRANSFER
    POST /api/transaction/transfer { from, to, amount }
-   → { message, transaction, newBalance }
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 let pendingTransfer = null;
 
 function initiateTransfer() {
   if (!state.accountNumber) { toast('You need a bank account to transfer funds', 'error'); return; }
-
   const toAcct    = document.getElementById('tfAcctNum').value.trim();
   const recipient = document.getElementById('tfRecipient').value.trim();
   const amount    = document.getElementById('tfAmount').value;
   const narration = document.getElementById('tfNarration').value.trim();
 
-  if (!toAcct || toAcct.length !== 10) { toast('Enter a valid 10-digit account number', 'error'); return; }
-  if (!recipient)                       { toast('Please wait for account name lookup', 'error'); return; }
-  if (!amount || Number(amount) < 1)    { toast('Enter a valid amount', 'error'); return; }
-  if (toAcct === state.accountNumber)   { toast("You can't transfer to yourself", 'error'); return; }
-  if (state.balance !== null && Number(amount) > state.balance) { toast('Insufficient balance', 'error'); return; }
+  if (!toAcct||toAcct.length!==10)  { toast('Enter a valid 10-digit account number','error'); return; }
+  if (!recipient)                    { toast('Please wait for account name lookup','error'); return; }
+  if (!amount||Number(amount)<1)     { toast('Enter a valid amount','error'); return; }
+  if (toAcct===state.accountNumber)  { toast("You can't transfer to yourself",'error'); return; }
+  if (state.balance!==null&&Number(amount)>state.balance) { toast('Insufficient balance','error'); return; }
 
   pendingTransfer = { toAcct, recipient, amount, narration };
   document.getElementById('m-to').textContent        = toAcct;
@@ -959,46 +899,42 @@ function initiateTransfer() {
 async function executeTransfer() {
   if (!pendingTransfer) return;
   const btn = document.getElementById('btnConfirmTransfer');
-  btn.disabled  = true;
-  btn.innerHTML = '<span class="spinner"></span>&nbsp; Processing...';
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>&nbsp; Processing...';
   try {
     const data = await apiFetch('/transaction/transfer', {
-      method: 'POST',
-      body: JSON.stringify({ from: state.accountNumber, to: pendingTransfer.toAcct, amount: Number(pendingTransfer.amount) })
+      method:'POST',
+      body: JSON.stringify({ from:state.accountNumber, to:pendingTransfer.toAcct, amount:Number(pendingTransfer.amount) })
     });
-    if (data.newBalance !== undefined) { state.balance = data.newBalance; updateBalanceUI(); }
+    if (data.newBalance!==undefined) { state.balance=data.newBalance; updateBalanceUI(); }
     else { await refreshBalance(); }
     await loadTransactions();
-    closeModal();
-    closePanel('transferPanel');
-    ['tfAcctNum','tfRecipient','tfAmount','tfNarration'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('nameEnquiryResult').textContent = '';
-    toast(`₦${Number(pendingTransfer.amount).toLocaleString()} sent to ${pendingTransfer.recipient} successfully!`, 'success');
-    pendingTransfer = null;
+    closeModal(); closePanel('transferPanel');
+    ['tfAcctNum','tfRecipient','tfAmount','tfNarration'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('nameEnquiryResult').textContent='';
+    toast(`₦${Number(pendingTransfer.amount).toLocaleString()} sent to ${pendingTransfer.recipient} successfully!`,'success');
+    pendingTransfer=null;
   } catch (err) {
-    toast(err.message || 'Transfer failed', 'error');
+    toast(err.message||'Transfer failed','error');
   } finally {
-    btn.disabled  = false;
-    btn.innerHTML = 'Send Money';
+    btn.disabled=false; btn.innerHTML='Send Money';
   }
 }
 
 function closeModal() {
   document.getElementById('confirmModal').classList.remove('show');
-  pendingTransfer = null;
+  pendingTransfer=null;
 }
 
-/* ══════════════════════════════════════════════════
-   VERIFY BVN
+/* ════════════════════════════════════════
+   VERIFY BVN (direct NIBSS)
    POST /api/auth/verify-bvn { bvn, dob }
-   → { message, user: { firstName, lastName, isVerified } }
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 function switchIdTab(tab, btn) {
   document.querySelectorAll('.id-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.id-tab-content').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('verifyResult').innerHTML = '';
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('verifyResult').innerHTML='';
 }
 
 async function verifyBvn() {
@@ -1006,79 +942,55 @@ async function verifyBvn() {
   const dob = document.getElementById('bvnDob').value;
   const el  = document.getElementById('verifyResult');
 
-  if (!bvn || bvn.length !== 11) { toast('Enter a valid 11-digit BVN', 'error'); return; }
-  if (!dob)                       { toast('Please enter your date of birth', 'error'); return; }
+  if (!bvn||bvn.length!==11) { toast('Enter a valid 11-digit BVN','error'); return; }
+  if (!dob)                   { toast('Please enter your date of birth','error'); return; }
 
   if (state.user?.isVerified) {
-    el.innerHTML = `
-      <div class="verify-result">
-        <div class="v-icon">✅</div>
-        <div class="v-title">Already Verified</div>
-        <div class="v-sub">Your BVN is already verified.<br>Name: <strong>${state.accountName || state.user.firstName + ' ' + state.user.lastName}</strong></div>
-      </div>`;
+    el.innerHTML=`<div class="verify-result"><div class="v-icon">✅</div><div class="v-title">Already Verified</div><div class="v-sub">Your BVN is already verified.<br>Name: <strong>${state.accountName}</strong></div></div>`;
     return;
   }
 
-  el.innerHTML = '<div style="text-align:center;padding:20px;"><span class="spinner"></span>&nbsp; Verifying with NIBSS...</div>';
+  el.innerHTML='<div style="text-align:center;padding:20px;"><span class="spinner"></span>&nbsp; Verifying with NIBSS...</div>';
 
   try {
-    const data = await apiFetch('/auth/verify-bvn', {
-      method: 'POST',
-      body:   JSON.stringify({ bvn, dob })
-    });
-    state.user.isVerified = true;
-    state.user.firstName  = data.user.firstName;
-    state.user.lastName   = data.user.lastName;
-    state.accountName     = `${data.user.firstName} ${data.user.lastName}`;
+    const data = await apiFetch('/auth/verify-bvn', { method:'POST', body:JSON.stringify({ bvn, dob }) });
+    state.user.isVerified         = true;
+    state.user.verificationStatus = 'approved';
+    state.user.firstName          = data.user.firstName;
+    state.user.lastName           = data.user.lastName;
+    state.accountName             = `${data.user.firstName} ${data.user.lastName}`;
     document.getElementById('welcomeName').textContent = state.accountName;
     document.getElementById('navName').textContent     = data.user.firstName;
     document.getElementById('navAvatar').textContent   = `${data.user.firstName[0]}${data.user.lastName[0]}`.toUpperCase();
-    el.innerHTML = `
-      <div class="verify-result">
-        <div class="v-icon">✅</div>
-        <div class="v-title">BVN Verified!</div>
-        <div class="v-sub">Welcome <strong>${data.user.firstName} ${data.user.lastName}</strong>! Your account is now fully verified.</div>
-      </div>`;
-    toast('BVN verified successfully!', 'success');
+    updateStatusBanners();
+    el.innerHTML=`<div class="verify-result"><div class="v-icon">✅</div><div class="v-title">BVN Verified!</div><div class="v-sub">Welcome <strong>${data.user.firstName} ${data.user.lastName}</strong>! You can now create your bank account.</div></div>`;
+    toast('BVN verified! You can now create your bank account.','success');
   } catch (err) {
-    el.innerHTML = `
-      <div class="verify-result error">
-        <div class="v-icon">❌</div>
-        <div class="v-title">Verification Failed</div>
-        <div class="v-sub">${err.message}</div>
-      </div>`;
+    el.innerHTML=`<div class="verify-result error"><div class="v-icon">❌</div><div class="v-title">Verification Failed</div><div class="v-sub">${err.message}</div></div>`;
   }
 }
 
 function verifyNin() {
-  const nin  = document.getElementById('ninInput').value.trim();
-  const name = document.getElementById('ninName').value.trim();
-  const el   = document.getElementById('verifyResult');
-  if (!nin || nin.length !== 11) { toast('Enter a valid 11-digit NIN', 'error'); return; }
-  if (!name)                     { toast('Enter your full name', 'error'); return; }
-  el.innerHTML = `
-    <div class="verify-result">
-      <div class="v-icon">ℹ️</div>
-      <div class="v-title">NIN Submitted</div>
-      <div class="v-sub">NIN <strong>${nin}</strong> recorded for <strong>${name}</strong>.<br>NIN verification requires a dedicated NIN endpoint.</div>
-    </div>`;
+  const nin=document.getElementById('ninInput').value.trim();
+  const name=document.getElementById('ninName').value.trim();
+  const el=document.getElementById('verifyResult');
+  if (!nin||nin.length!==11) { toast('Enter a valid 11-digit NIN','error'); return; }
+  if (!name)                  { toast('Enter your full name','error'); return; }
+  el.innerHTML=`<div class="verify-result"><div class="v-icon">ℹ️</div><div class="v-title">NIN Submitted</div><div class="v-sub">NIN <strong>${nin}</strong> recorded for <strong>${name}</strong>.<br>NIN verification requires a dedicated endpoint.</div></div>`;
 }
 
-/* ══════════════════════════════════════════════════
+/* ════════════════════════════════════════
    PANELS
-══════════════════════════════════════════════════ */
+════════════════════════════════════════ */
 function openPanel(id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const panel = document.getElementById(id);
+  const panel=document.getElementById(id);
   panel.classList.add('active');
-  if (id === 'historyPanel') loadTransactions();
-  if (id === 'balancePanel') updateBalanceUI();
-  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  if (id==='historyPanel') loadTransactions();
+  if (id==='balancePanel') updateBalanceUI();
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
 }
-
-function closePanel(id) {
-  document.getElementById(id).classList.remove('active');
-}
+function closePanel(id) { document.getElementById(id).classList.remove('active'); }
 </script>
 </body>
 </html>
