@@ -27,10 +27,16 @@ router.get("/validate-bvn/:userId", async (req, res) => {
     await user.save();
 
     // Email the user about the result
-    const mailer = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-    });
+   const mailer = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  family: 4, // ← forces IPv4
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
     await mailer.sendMail({
       from:    `"RIABANK" <${process.env.EMAIL_USER}>`,
