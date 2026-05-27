@@ -19,6 +19,7 @@ function getMailer() {
   });
 }
 
+
 // ─── Reusable email sender ───
 async function sendMail({ to, subject, html }) {
   const mailer = getMailer();
@@ -46,46 +47,29 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Try NIBSS BVN validation — don't block if it fails
-    let firstName  = "RIABANK";
-    let lastName   = "User";
-    let isVerified = false;
-
-    try {
-      const bvnData = await validateBVN(bvn);
-      if (bvnData && bvnData.success) {
-        firstName  = bvnData.data.firstName || firstName;
-        lastName   = bvnData.data.lastName  || lastName;
-        isVerified = true;
-      }
-    } catch (_) {
-      isVerified = false;
-    }
-
     const hashedPassword = await hashPassword(password);
 
+    // ✅ Always create as unverified — no NIBSS call here
     const user = await User.create({
-      firstName,
-      lastName,
+      firstName:          "RIABANK",
+      lastName:           "User",
       email,
-      password: hashedPassword,
+      password:           hashedPassword,
       bvn,
       dob,
-      isVerified,
-      verificationStatus: isVerified ? 'approved' : 'none'
+      isVerified:         false,
+      verificationStatus: 'none'
     });
 
     res.status(201).json({
-      message: isVerified
-        ? "Registration successful. BVN verified."
-        : "Registration successful. Please log in and request BVN validation.",
+      message: "Registration successful! Please log in and request BVN validation.",
       user: {
         id:                 user._id,
         email:              user.email,
         firstName:          user.firstName,
         lastName:           user.lastName,
-        isVerified:         user.isVerified,
-        verificationStatus: user.verificationStatus
+        isVerified:         false,
+        verificationStatus: 'none'
       }
     });
 
